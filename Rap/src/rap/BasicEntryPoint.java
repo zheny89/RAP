@@ -8,14 +8,26 @@ import org.eclipse.swt.widgets.Composite;
 
 
 public class BasicEntryPoint extends AbstractEntryPoint {
-
+	private Composite parent;
+	private View currentView;
     @Override
     protected void createContents(Composite parent) {
-        parent.setLayout(new GridLayout(2, false));
-        Button checkbox = new Button(parent, SWT.CHECK);
-        checkbox.setText("Hello");
-        Button button = new Button(parent, SWT.PUSH);
-        button.setText("World");
+    	currentView = null;
+        this.parent = parent;
+        viewLogin();
+    }
+    
+    private void viewLogin(){
+    	currentView = new LoginView(parent,this);
+    }
+    
+    private void viewClient(){
+    	if(currentView != null) currentView.dispose();
+    	currentView = new Client(parent);
+    }
+    
+    public void changeView(int viewID){
+    	viewClient();
     }
 
 }
