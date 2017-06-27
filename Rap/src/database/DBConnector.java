@@ -1,6 +1,8 @@
 package database;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.derby.jdbc.EmbeddedDriver;
 
@@ -21,13 +23,6 @@ public class DBConnector {
 
 	private Connection connection;
 	
-	/**
-	 * Создаёт объект коннектора к указанной базе данных и регистрирует встроенный драйвер
-	 * @param driverName название (встроенного) драйвера базы данных
-	 * @param protocol протокол подключения к базе данных
-	 * @param databaseName название базы данных
-	 * @throws SQLException 
-	 */
 	public DBConnector(String driverName, String protocol, String databaseName) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException 
 	{
@@ -37,8 +32,6 @@ public class DBConnector {
 		registerDerbyDriverInstance();
 	}
 	
-	/** Регистрирует встроенный драйвер базы данных 
-	 * @throws SQLException */
 	public void registerDerbyDriverInstance()
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException 
 	{
@@ -47,7 +40,6 @@ public class DBConnector {
 			System.out.println("Registered database driver instance");
 	}
 	
-	/** Осуществляет подключение к базе данных */
 	public void connect() throws SQLException 
 	{
 		connection = DriverManager.getConnection(protocol + dbName + ";create=true");
@@ -60,10 +52,6 @@ public class DBConnector {
 		}
 	}
 
-	/**
-	 * Проверка, не закрыто ли соединение с базой данных
-	 * @return false, если соединение закрыто, иначе true
-	 */
 	public boolean isConnected() {
 		try {
 			return !connection.isClosed();
@@ -73,7 +61,6 @@ public class DBConnector {
 		}
 	}
 	
-	/** Закрывает соединение с базой данных */
 	public void close() {
 		try {
 			if (isConnected())
@@ -85,10 +72,6 @@ public class DBConnector {
 		}
 	}
 	
-	/**
-	 * Проверяет, есть ли в базе таблицы, выводит их в консоль отладки
-	 * @return true если база не пуста, иначе false
-	 */
 	public boolean isDatabaseEmpty() {
 		boolean result = true;
 		try {
@@ -148,7 +131,7 @@ public class DBConnector {
 			preparedStatement.setBytes(2, pswdHash);
 			preparedStatement.setShort(3, (isAdmin) ? (short)1 : (short)0);
 			preparedStatement.setString(4, (name != null) ? name : login);
-			preparedStatement.setShort(5, Types.SMALLINT);
+			preparedStatement.setShort(5, (short)0);
 			preparedStatement.setNull(6, Types.DATE);
 			preparedStatement.executeUpdate();
 			ResultSet rs = preparedStatement.getGeneratedKeys();
@@ -161,6 +144,26 @@ public class DBConnector {
 			e.printStackTrace();
 			return 0;
 		}
+	}
+	
+	public User getUser(int id) {
+		User result = null;
+		final String sql = "SELECT * FROM USERS WHERE id = " + Integer.toString(id);
+		try {
+			ResultSet rs = connection.createStatement().executeQuery(sql);
+			if (rs.next()) {
+				result = new User();
+				result.setId(rs.getInt("user_id"));
+				result.setLogin(rs.getString("login"));
+				result.setPswdHash(rs.getBytes("password_hash"));
+				result.setName(rs.getString("name"));
+				result.setAdmin(rs.getShort("privilege") != 0);
+				result.setFlag(rs.getShort("flag"), rs.getDate("flag_start_date"));
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 	
 	public User getUser(String login) {
@@ -183,37 +186,24 @@ public class DBConnector {
 		return result;
 	}
 	
-	/**
-	 * Удаляет запись пользователя из базы
-	 * @param id user id
-	 * @throws SQLException произошла ошибка базы данных во время выполнения запроса
-	 * @throws IdleUpdateException запрос не привел к изменению базы
-	 */
 	public void removeUser(int id) throws SQLException, IdleUpdateException {
 		String sql = "DELETE FROM USERS WHERE user_id = " + id;
 		performUpdate(sql);
 	}
 	
-	/**
-	 * Отмечает присутсвие пользователя на работе (8)
-	 * @param id user id
-	 * @param login имя пользователя
-	 * @param paswdHash хеш пароля
-	 * @throws PasswordMismatchException 
-	 * @throws LoginMismatchException 
-	 */
 	public boolean logUserIn(int id, String login, byte[] pswdHash) throws PasswordMismatchException, LoginMismatchException {
 		User user = getUser(login);
 		if (user == null)
 			throw new LoginMismatchException();
 		if (!user.assertPswdHash(pswdHash))
 			throw new PasswordMismatchException();
-		String sql = "INSERT INTO WORKTIME(day, user_id, worktime_hours) VALUES(?, ?, ?, ?)";
+		String sql = "INSERT INTO WORKTIME(day, user_id, worktime_hours, flag) VALUES(?, ?, ?, ?)";
 		try {
 			final PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setDate(1, new Date(new java.util.Date().getTime()));
 			preparedStatement.setInt(2, id);
 			preparedStatement.setShort(3, (short)8);
+			preparedStatement.setShort(4, User.Flags.NONE);
 			preparedStatement.executeUpdate();
 			connection.commit();
 			return true;
@@ -223,12 +213,6 @@ public class DBConnector {
 		}
 	}
 	
-	/**
-	 * Добавляет сообщение от работника администратору
-	 * @param fromId id отправителя
-	 * @param message текст сообщения
-	 * @return id записи в БД
-	 */
 	public int addMessage(int fromId, String message) {
 		final String sql = "INSERT INTO MESSAGES(day, sender_id, message, is_read) VALUES(?, ?, ?, ?)";
 		try {
@@ -250,20 +234,13 @@ public class DBConnector {
 		}
 	}
 	
-	/**
-	 * Изменяет часы работы сотрудника в определенный день
-	 * @param id id работника
-	 * @param day дата
-	 * @param workTime новое время
-	 * @return true при успешном изменении, иначе false
-	 */
-	public boolean updateUserWorktime(int id, java.util.Date day, short workTime) {
+	public boolean updateWorktime(int userId, java.util.Date day, short workTime) {
 		final String sql = "UPDATE WORTIME SET worktime_hours=? WHERE day=? AND user_id=?";
 		try {
 			final PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setShort(1, workTime);
 			preparedStatement.setDate(2, new Date(day.getTime()));
-			preparedStatement.setInt(3, id);
+			preparedStatement.setInt(3, userId);
 			int result = preparedStatement.executeUpdate();
 			return result != 0;
 		} catch (SQLException e) {
@@ -272,13 +249,6 @@ public class DBConnector {
 		}
 	}
 	
-	/**
-	 * Выставить флаг пользователю (возможно отложенный)
-	 * @param id работника
-	 * @param flag флаг из User.Flags
-	 * @param startDate начало действия флага, null - с текущей даты
-	 * @return
-	 */
 	public boolean updateUserFlag(int id, short flag, java.util.Date startDate) {
 		final String sql = "UPDATE USERS SET flag=?, flag_start_time=? WHERE user_id=?";
 		try {
@@ -295,7 +265,31 @@ public class DBConnector {
 	}
 	
 	public boolean clearUserFlags(int id) {
-		return updateUserFlag
+		return updateUserFlag(id, User.Flags.NONE, null);
+	}
+	
+	public List<Message> getMessages(short messageStatus) {
+		List<Message> result = new ArrayList<Message>();
+		// TODO: Sort by date descending
+		final String sql = "SELECT * FROM MESSAGES WHERE is_read=" + Short.toString(messageStatus);
+		try {
+			ResultSet rs = connection.createStatement().executeQuery(sql);
+			while (rs.next()) {
+				Message msg = new Message();
+				msg.setId(rs.getInt("message_id"));
+				msg.setDate(rs.getDate("day"));
+				msg.setMessage(rs.getString("message"));
+				msg.setStatus(rs.getShort("is_read"));
+				int senderId = rs.getInt("sender_id");
+				User sender = getUser(senderId);
+				msg.setSender(sender);
+				result.add(msg);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
 	}
 	
 	private void performUpdate(String sql) throws SQLException, IdleUpdateException {

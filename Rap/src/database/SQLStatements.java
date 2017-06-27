@@ -19,6 +19,7 @@ public interface SQLStatements {
 			+ "day DATE NOT NULL,"
 			+ "user_id INTEGER NOT NULL,"
 			+ "worktime_hours SMALLINT NOT NULL,"
+			+ "flag SMALLINT NOT NULL,"
 			+ "PRIMARY KEY (day, user_id),"
 			+ "FOREIGN KEY (user_id) REFERENCES USERS(user_id)"
 			+ ")";

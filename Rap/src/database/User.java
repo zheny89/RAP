@@ -1,9 +1,10 @@
 package database;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 
-public class User {
+public class User implements Serializable {
 	
 	public static interface Flags {
 		static final short NONE = (short) 0;
