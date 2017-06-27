@@ -11,7 +11,7 @@ public interface SQLStatements {
 			+ "name VARCHAR(100),"
 			+ "flag SMALLINT,"
 			+ "flag_start_date DATE,"
-			+ "PRIMARY KEY (id, login)"
+			+ "PRIMARY KEY (user_id)"
 			+ ")";
 	
 	final String CREATE_TABLE_WORKTIME = "CREATE TABLE WORKTIME"
@@ -21,7 +21,7 @@ public interface SQLStatements {
 			+ "worktime_hours SMALLINT NOT NULL,"
 			+ "flag SMALLINT NOT NULL,"
 			+ "PRIMARY KEY (day, user_id),"
-			+ "FOREIGN KEY (user_id) REFERENCES USERS(user_id)"
+			+ "FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE"
 			+ ")";
 	
 	final String CREATE_TABLE_MESSAGES = "CREATE TABLE MESSAGES"
@@ -31,7 +31,7 @@ public interface SQLStatements {
 			+ "sender_id INTEGER NOT NULL,"
 			+ "message VARCHAR(1000),"
 			+ "is_read SMALLINT NOT NULL,"
-			+ "PRIMARY KEY (id),"
-			+ "FOREIGN KEY (sender_id) REFERENCES USERS (user_id)"
+			+ "PRIMARY KEY (message_id),"
+			+ "FOREIGN KEY (sender_id) REFERENCES USERS (user_id) ON DELETE CASCADE"
 			+ ")";
 }

@@ -107,7 +107,7 @@ public class DBConnector {
 	}
 	
 	public void clear() throws SQLException {
-		String[] sqls = { "DROP TABLE USERS", "DROP TABLE WORKTIME", "DROP TABLE MESSAGES" };
+		String[] sqls = { "DROP TABLE WORKTIME", "DROP TABLE MESSAGES", "DROP TABLE USERS" };
 		for (String sql : sqls)
 			try {
 				connection.createStatement().executeUpdate(sql);
@@ -148,7 +148,7 @@ public class DBConnector {
 	
 	public User getUser(int id) {
 		User result = null;
-		final String sql = "SELECT * FROM USERS WHERE id = " + Integer.toString(id);
+		final String sql = "SELECT * FROM USERS WHERE user_id = " + Integer.toString(id);
 		try {
 			ResultSet rs = connection.createStatement().executeQuery(sql);
 			if (rs.next()) {
