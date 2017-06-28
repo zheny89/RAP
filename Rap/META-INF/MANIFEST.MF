@@ -13,3 +13,4 @@ Bundle-Classpath: .,
  lib/derbytools.jar
 Require-Bundle: org.eclipse.rap.rwt;bundle-version="[2.0.0,4.0.0)"
 Service-Component: OSGI-INF/contribution.xml
+Import-Package: org.eclipse.swt.widgets
