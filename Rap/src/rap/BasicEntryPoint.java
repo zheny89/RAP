@@ -9,6 +9,11 @@ import org.eclipse.rap.rwt.client.service.JavaScriptExecutor;
 import org.eclipse.rap.rwt.service.SettingStore;
 import org.eclipse.swt.widgets.Composite;
 
+import views.AdminView;
+import views.ClientView;
+import views.LoginView;
+import views.View;
+
 
 public class BasicEntryPoint extends AbstractEntryPoint {
 	private Composite parent;
@@ -21,7 +26,10 @@ public class BasicEntryPoint extends AbstractEntryPoint {
         store = RWT.getSettingStore();
     	currentView = null;
     	currentViewID = getCurrentViewID();
-    	
+    	setView(currentViewID);
+    }
+    
+    private void setView(int viewID){
         switch (currentViewID) {
 		case 0:
 	        viewLogin();
@@ -78,6 +86,10 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     		}
     	JavaScriptExecutor jsExecutor = RWT.getClient().getService(JavaScriptExecutor.class);
     	jsExecutor.execute("location.reload();");
+    }
+    
+    public static int getUserID(){
+    	return Integer.valueOf(RWT.getSettingStore().getAttribute("userID"));
     }
 
 }

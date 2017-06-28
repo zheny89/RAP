@@ -11,6 +11,7 @@ public class User implements Serializable {
 		static final short TIME_OFF = (short) 1;
 		static final short SICK_LEAVE = (short) 2;
 		static final short VACATION = (short) 3;
+		static final short FIRED = (short) 4;
 	}
 	
 	int id;

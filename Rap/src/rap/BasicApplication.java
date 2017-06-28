@@ -19,31 +19,21 @@ public class BasicApplication implements ApplicationConfiguration {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(WebClient.PAGE_TITLE, "Система");
         application.addEntryPoint("/home", BasicEntryPoint.class, properties);
-        
-        try {
-        	try {
-				DBConnector conn = new DBConnector(DBConnector.EMBEDDED_DERBY_DRIVER, DBConnector.DERBY_PROTOCOL, "myDB");
+        new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+		        try {
+					DBConnector con = new DBConnector(DBConnector.EMBEDDED_DERBY_DRIVER, DBConnector.DERBY_PROTOCOL, "trol");
+					con.connect();
+					con.close();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
-				conn.connect();
-				
-				User lolUser = conn.getUser("lol");
-				
-				conn.close();
-				
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-			System.out.println("");
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		}).start();
+        
     }
 }
