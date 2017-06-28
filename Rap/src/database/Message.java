@@ -12,7 +12,7 @@ public class Message implements Serializable {
 	
 	int id;
 	Date date;
-	User sender;
+	Worker sender;
 	String message;
 	short status;
 
@@ -34,11 +34,11 @@ public class Message implements Serializable {
 		this.date = date;
 	}
 
-	public User getSender() {
+	public Worker getSender() {
 		return sender;
 	}
 
-	public void setSender(User sender) {
+	public void setSender(Worker sender) {
 		this.sender = sender;
 	}
 

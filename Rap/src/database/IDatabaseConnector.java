@@ -11,8 +11,8 @@ public interface IDatabaseConnector {
 	boolean isDatabaseEmpty();
 	void clear() throws SQLException;
 	int addUser(String login, byte[] pswdHash, String name, boolean isAdmin);
-	User getUser(int id);
-	User getUser(String login);
+	Worker getUser(int id);
+	Worker getUser(String login);
 	boolean logUserIn(int id);
 	int addMessage(int fromId, String message);
 	boolean updateWorktime(int userId, java.util.Date day, short workTime);
