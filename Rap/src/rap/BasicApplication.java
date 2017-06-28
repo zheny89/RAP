@@ -17,7 +17,7 @@ public class BasicApplication implements ApplicationConfiguration {
 
     public void configure(Application application) {
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put(WebClient.PAGE_TITLE, "Hello RAP");
+        properties.put(WebClient.PAGE_TITLE, "Система");
         application.addEntryPoint("/home", BasicEntryPoint.class, properties);
         
         try {
@@ -46,5 +46,4 @@ public class BasicApplication implements ApplicationConfiguration {
 			e.printStackTrace();
 		}
     }
-
 }

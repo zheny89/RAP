@@ -52,10 +52,9 @@ public class LoginView implements View {
 		loginButton.setText(buttonString);
 		loginButton.setLayoutData(new GridData(SWT.CENTER,SWT.CENTER,true,true,2,1));
 		loginButton.addListener(SWT.MouseUp,new Listener() {
-			
 			@Override
 			public void handleEvent(Event event) {
-				enterPoint.changeView(1);
+				enterPoint.changeView(2);
 			}
 		});
 	}
