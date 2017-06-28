@@ -4,13 +4,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.derby.jdbc.EmbeddedDriver;
-
 import exception.IdleUpdateException;
-import exception.LoginMismatchException;
-import exception.PasswordMismatchException;
 
-public class DBConnector {
+public class DBConnector implements IDatabaseConnector {
 
 	private boolean debugMode = true;
 	
@@ -191,12 +187,7 @@ public class DBConnector {
 		performUpdate(sql);
 	}
 	
-	public boolean logUserIn(int id, String login, byte[] pswdHash) throws PasswordMismatchException, LoginMismatchException {
-		User user = getUser(login);
-		if (user == null)
-			throw new LoginMismatchException();
-		if (!user.assertPswdHash(pswdHash))
-			throw new PasswordMismatchException();
+	public boolean logUserIn(int id) {
 		String sql = "INSERT INTO WORKTIME(day, user_id, worktime_hours, flag) VALUES(?, ?, ?, ?)";
 		try {
 			final PreparedStatement preparedStatement = connection.prepareStatement(sql);
