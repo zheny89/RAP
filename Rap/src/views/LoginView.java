@@ -13,8 +13,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
-import database.IDatabaseConnector;
-import database.User;
+import database.Worker;
 import rap.BasicEntryPoint;
 
 public class LoginView implements View {
@@ -27,7 +26,6 @@ public class LoginView implements View {
 	private String loginString = "Логин";
 	private String pswdString = "Пароль";
 	private String buttonString = "Войти";
-	private IDatabaseConnector dbConnector;
 	
 	public LoginView(Composite parent, BasicEntryPoint enterPoint){
 		this.enterPoint = enterPoint;
@@ -78,7 +76,7 @@ public class LoginView implements View {
 	private boolean identification(String login, byte[] pswd){
 		//тест логин - пароль
 		if(false) return false;
-		User user = new User();
+		Worker user = new Worker();
 		user.setId(1);
 		if(login.equals("admin")) user.setAdmin(true);
 		else user.setAdmin(false);

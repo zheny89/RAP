@@ -12,14 +12,14 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import database.IDatabaseConnector;
+import database.LinkConnector;
+import exception.EntryNotExistsException;
 import rap.BasicEntryPoint;
 
 public class ClientView implements View {
 	private Button sendRequestButton,sendVocation;
 	private Label statusLabel;
 	private Composite clientComposite;
-	private IDatabaseConnector dbConnector;
 	private int userID;
 	
 	public ClientView(Composite parent){
@@ -53,7 +53,12 @@ public class ClientView implements View {
 			public void handleEvent(Event event) {
 				// Отправка запроса
 				String message = "Хочу отпуск";
-				dbConnector.addMessage(userID, message);
+				try {
+					LinkConnector.addMessage(userID, message);
+				} catch (EntryNotExistsException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});;
 		clientComposite.pack();
@@ -90,7 +95,12 @@ public class ClientView implements View {
 				@Override
 				public void handleEvent(Event event) {
 					String message = requestText.getText();
-					dbConnector.addMessage(userID, message);
+					try {
+						LinkConnector.addMessage(userID, message);
+					} catch (EntryNotExistsException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			});
 			

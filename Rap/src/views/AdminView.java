@@ -13,13 +13,10 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
-import database.IDatabaseConnector;
-
 public class AdminView implements View {
 	private Composite adminComposite,leftComposite,rightComposite;
 	private Button reportsButton,changeBaseButton,messageButton;
 	private Label titleLabel;
-	private IDatabaseConnector dbConnector;
 	private int userID;
 	
 	
