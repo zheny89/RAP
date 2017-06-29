@@ -1,15 +1,20 @@
 package database;
 
-import java.util.Arrays;
-import java.util.Date;
+import lombok.Data;
+
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
+@Data
 public class Worker {
 	
 	public static interface Flags {
@@ -23,62 +28,15 @@ public class Worker {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	@Column(unique=true)
-	String login;
+	private String login;
 	//byte[] pswdHash;
-	boolean isAdmin;
-	String name;
-	//short flag = Flags.NONE;
-	//Date flagStartDate = null; // maybe should change to LocalDateTime
+	private boolean isAdmin;
+	private String name;
+	private short flag;
+	private Date flagStartDate; // maybe should change to LocalDateTime
 	
-	public Worker() {
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getLogin() {
-		return login;
-	}
-
-	public void setLogin(String login) {
-		this.login = login;
-	}
-
-	/*public boolean assertPswdHash(byte[] pswdHash) {
-		return Arrays.equals(this.pswdHash, pswdHash);
-	}*/
-
-	/*public void setPswdHash(byte[] pswdHash) {
-		this.pswdHash = pswdHash;
-	}*/
-
-	public boolean isAdmin() {
-		return isAdmin;
-	}
-
-	public void setAdmin(boolean isAdmin) {
-		this.isAdmin = isAdmin;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/*public short getFlag() {
-		return flag;
-	}
-	
-	public void setFlag(short flag, Date startDate) {
-		this.flag = flag;
-		this.flagStartDate = startDate;
-	}*/
+	@OneToMany(mappedBy = "sender")
+	private List<Message> messages = new ArrayList<Message>();
+	@OneToMany(mappedBy = "worker")
+	private List<Worktime> worktime = new ArrayList<Worktime>();
 }

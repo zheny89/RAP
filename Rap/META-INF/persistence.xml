@@ -4,7 +4,11 @@
     version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
     
     <persistence-unit name="workers" transaction-type="RESOURCE_LOCAL">
+        
         <class>database.Worker</class>
+        <class>database.Message</class>
+        <class>database.Worktime</class>
+        
  <properties>
   <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
   <property name="javax.persistence.jdbc.url"

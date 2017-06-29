@@ -266,14 +266,14 @@ public class DBConnector implements IDatabaseConnector {
 		try {
 			ResultSet rs = connection.createStatement().executeQuery(sql);
 			while (rs.next()) {
-				Message msg = new Message();
-				msg.setId(rs.getInt("message_id"));
-				msg.setDate(rs.getDate("day"));
-				msg.setMessage(rs.getString("message"));
-				msg.setStatus(rs.getShort("is_read"));
 				int senderId = rs.getInt("sender_id");
 				Worker sender = getUser(senderId);
+				Message msg = new Message();
 				msg.setSender(sender);
+				msg.setId(rs.getInt("message_id"));
+				msg.setDay(rs.getDate("day"));
+				msg.setMessage(rs.getString("message"));
+				msg.setStatus(rs.getShort("is_read"));
 				result.add(msg);
 			}
 		} catch (SQLException e) {
