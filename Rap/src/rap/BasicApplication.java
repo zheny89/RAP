@@ -1,39 +1,66 @@
 package rap;
 
-import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.client.WebClient;
 
-import database.DBConnector;
+import database.LinkConnector;
 import database.Message;
-import database.User;
+import database.Worker;
+import database.Worktime;
+import exception.EntryAlreadyExistsException;
+import exception.EntryNotExistsException;
 
 
 public class BasicApplication implements ApplicationConfiguration {
 
-    public void configure(Application application) {
+	public void configure(Application application) {
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put(WebClient.PAGE_TITLE, "Ñèñòåìà");
+        properties.put(WebClient.PAGE_TITLE, "Ã‘Ã¨Ã±Ã²Ã¥Ã¬Ã ");
         application.addEntryPoint("/home", BasicEntryPoint.class, properties);
+        
         new Thread(new Runnable() {
-			
 			@Override
 			public void run() {
-		        try {
-					DBConnector con = new DBConnector(DBConnector.EMBEDDED_DERBY_DRIVER, DBConnector.DERBY_PROTOCOL, "trol");
-					con.connect();
-					con.close();
-				} catch (Exception e) {
+				LinkConnector.connect();
+				
+				try {
+					LinkConnector.updateWorktimeHours(1, LocalDate.now(), (short) 6, Worker.Flags.TIME_OFF);
+					LinkConnector.updateWorkerFlag(2, Worker.Flags.SICK_LEAVE, null);
+				} catch (EntryNotExistsException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+								
+				System.out.println("WORKER Table");
+				List<Worker> userList = LinkConnector.getWorkers();
+		        for (Worker usr : userList) {
+		            System.out.println(usr.toString());
+		        }
+		        System.out.println("Size: " + userList.size());
+
+		        System.out.println("WORKTIME Table");
+		        List<Worktime> worktimeList = LinkConnector.getWorktimes();
+		        for (Worktime wt : worktimeList) {
+		        	System.out.println(wt.toString());
+		        }
+		        System.out.println("Size: " + worktimeList.size());
+		        
+		        System.out.println("MESSAGE Table");
+		        List<Message> msgList = LinkConnector.getMessages(Message.Status.UNREAD);
+		        for (Message msg : msgList) {
+		            System.out.println(msg.toString());
+		        }
+		        System.out.println("Size: " + msgList.size());
+		        
+		        LinkConnector.close();
 			}
-		}).start();
-        
+        	
+        }).start();
     }
 }

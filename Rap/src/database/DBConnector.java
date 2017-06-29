@@ -142,19 +142,19 @@ public class DBConnector implements IDatabaseConnector {
 		}
 	}
 	
-	public User getUser(int id) {
-		User result = null;
+	public Worker getUser(int id) {
+		Worker result = null;
 		final String sql = "SELECT * FROM USERS WHERE user_id = " + Integer.toString(id);
 		try {
 			ResultSet rs = connection.createStatement().executeQuery(sql);
 			if (rs.next()) {
-				result = new User();
+				result = new Worker();
 				result.setId(rs.getInt("user_id"));
 				result.setLogin(rs.getString("login"));
-				result.setPswdHash(rs.getBytes("password_hash"));
+				//result.setPswdHash(rs.getBytes("password_hash"));
 				result.setName(rs.getString("name"));
 				result.setAdmin(rs.getShort("privilege") != 0);
-				result.setFlag(rs.getShort("flag"), rs.getDate("flag_start_date"));
+				//result.setFlag(rs.getShort("flag"), rs.getDate("flag_start_date"));
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -162,19 +162,19 @@ public class DBConnector implements IDatabaseConnector {
 		return result;
 	}
 	
-	public User getUser(String login) {
-		User result = null;
+	public Worker getUser(String login) {
+		Worker result = null;
 		final String sql = "SELECT * FROM USERS WHERE login = \'" + login + "\'";
 		try {
 			ResultSet rs = connection.createStatement().executeQuery(sql);
 			if (rs.next()) {
-				result = new User();
+				result = new Worker();
 				result.setId(rs.getInt("user_id"));
 				result.setLogin(rs.getString("login"));
-				result.setPswdHash(rs.getBytes("password_hash"));
+				//result.setPswdHash(rs.getBytes("password_hash"));
 				result.setName(rs.getString("name"));
 				result.setAdmin(rs.getShort("privilege") != 0);
-				result.setFlag(rs.getShort("flag"), rs.getDate("flag_start_date"));
+				//result.setFlag(rs.getShort("flag"), rs.getDate("flag_start_date"));
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -194,7 +194,7 @@ public class DBConnector implements IDatabaseConnector {
 			preparedStatement.setDate(1, new Date(new java.util.Date().getTime()));
 			preparedStatement.setInt(2, id);
 			preparedStatement.setShort(3, (short)8);
-			preparedStatement.setShort(4, User.Flags.NONE);
+			preparedStatement.setShort(4, Worker.Flags.NONE);
 			preparedStatement.executeUpdate();
 			connection.commit();
 			return true;
@@ -256,7 +256,7 @@ public class DBConnector implements IDatabaseConnector {
 	}
 	
 	public boolean clearUserFlags(int id) {
-		return updateUserFlag(id, User.Flags.NONE, null);
+		return updateUserFlag(id, Worker.Flags.NONE, null);
 	}
 	
 	public List<Message> getMessages(short messageStatus) {
@@ -266,14 +266,14 @@ public class DBConnector implements IDatabaseConnector {
 		try {
 			ResultSet rs = connection.createStatement().executeQuery(sql);
 			while (rs.next()) {
+				int senderId = rs.getInt("sender_id");
+				Worker sender = getUser(senderId);
 				Message msg = new Message();
+				msg.setSender(sender);
 				msg.setId(rs.getInt("message_id"));
-				msg.setDate(rs.getDate("day"));
+				msg.setDay(rs.getDate("day"));
 				msg.setMessage(rs.getString("message"));
 				msg.setStatus(rs.getShort("is_read"));
-				int senderId = rs.getInt("sender_id");
-				User sender = getUser(senderId);
-				msg.setSender(sender);
 				result.add(msg);
 			}
 		} catch (SQLException e) {
