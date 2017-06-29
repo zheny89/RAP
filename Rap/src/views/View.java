@@ -1,4 +1,4 @@
-package rap;
+package views;
 
 public interface View {
 	void dispose();

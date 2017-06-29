@@ -1,4 +1,4 @@
-package rap;
+package views;
 
 import org.eclipse.rap.rwt.client.service.ExitConfirmation;
 import org.eclipse.swt.SWT;
@@ -13,10 +13,14 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
+import database.IDatabaseConnector;
+
 public class AdminView implements View {
 	private Composite adminComposite,leftComposite,rightComposite;
 	private Button reportsButton,changeBaseButton,messageButton;
 	private Label titleLabel;
+	private IDatabaseConnector dbConnector;
+	private int userID;
 	
 	
 	public AdminView(Composite parent){

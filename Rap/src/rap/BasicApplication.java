@@ -21,7 +21,7 @@ public class BasicApplication implements ApplicationConfiguration {
 
 	public void configure(Application application) {
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put(WebClient.PAGE_TITLE, "Система");
+        properties.put(WebClient.PAGE_TITLE, "Г‘ГЁГ±ГІГҐГ¬Г ");
         application.addEntryPoint("/home", BasicEntryPoint.class, properties);
         
         new Thread(new Runnable() {
