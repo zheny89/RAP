@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Query;
+
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.client.WebClient;
@@ -29,13 +31,7 @@ public class BasicApplication implements ApplicationConfiguration {
 			public void run() {
 				LinkConnector.connect();
 				
-				try {
-					LinkConnector.updateWorktimeHours(1, LocalDate.now(), (short) 6, Worker.Flags.TIME_OFF);
-					LinkConnector.updateWorkerFlag(2, Worker.Flags.SICK_LEAVE, null);
-				} catch (EntryNotExistsException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				//LinkConnector.updateWorkerFlag(2, Worker.Flags.SICK_LEAVE, null);
 								
 				System.out.println("WORKER Table");
 				List<Worker> userList = LinkConnector.getWorkers();

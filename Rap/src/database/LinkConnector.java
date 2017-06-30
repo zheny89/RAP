@@ -216,6 +216,15 @@ public class LinkConnector {
 	 * @return список работников
 	 */
 	@SuppressWarnings("unchecked")
+	public static List<Worker> getWorkersSortedByName() {
+		Query q = entityManager.createQuery("SELECT w FROM Worker w ORDER BY w.name");
+		return q.getResultList();
+	}
+	
+	/**
+	 * @return список работников
+	 */
+	@SuppressWarnings("unchecked")
 	public static List<Worktime> getWorktimes() {
 		Query q = entityManager.createQuery("SELECT w FROM Worktime w");
 		return q.getResultList();

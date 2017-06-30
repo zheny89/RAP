@@ -30,7 +30,7 @@ public class LoginView implements View {
 	private Composite loginComposite;
 	private BasicEntryPoint enterPoint;
 	private String titleString = "Вход в систему";
-	private String subtitleString = null;
+	private String subtitleString = "";
 	private String loginString = "Логин";
 	private String pswdString = "Пароль";
 	private String buttonString = "Войти";
@@ -52,7 +52,8 @@ public class LoginView implements View {
 		
 		subtitleLabel = new Label(loginComposite,SWT.NONE);
 		subtitleLabel.setLayoutData(new GridData(SWT.CENTER,SWT.CENTER,true,true,2,1));
-		//subtitleLabel.setText(subtitleString);
+		subtitleLabel.setText(subtitleString);
+		subtitleLabel.setVisible(false);
 		
 		loginLabel = new Label(loginComposite,SWT.NONE);
 		loginLabel.setText(loginString);
@@ -75,8 +76,12 @@ public class LoginView implements View {
 				String pswd = pswdText.getText();
 				String login = loginText.getText();
 				boolean authSucc = authenticateWorker(login, pswd);
-				if (!authSucc)
+				if (!authSucc) {
 					subtitleLabel.setText(subtitleString);
+					subtitleLabel.setVisible(true);
+					loginComposite.pack();
+					loginComposite.requestLayout();
+				}
 			}
 		});
 	}
@@ -87,13 +92,17 @@ public class LoginView implements View {
 	}
 	
 	private boolean authenticateWorker(String login, String pswd) {
+		if (login == null || pswd == null || login.isEmpty() || pswd.isEmpty()) {
+			subtitleString = "Неверный логин или пароль";
+			return false;
+		}
 		// логиним по ldap
 		LdapContext connection = null;
 		try {
 			connection = LdapAuthentication.getConnection(login, pswd);
 		} catch (NamingException e) {
 			e.printStackTrace();
-			subtitleString = "Неправильный логин или пароль";
+			subtitleString = "Неверный логин или пароль";
 			return false;
 		}
 		// проверяем, есть ли в базе данных
@@ -128,7 +137,7 @@ public class LoginView implements View {
 				enterPoint.changeView(View.Id.ADMIN_VIEW);
 			else enterPoint.changeView(View.Id.CLIENT_VIEW);
 		} catch (IOException e) {
-			subtitleString = "Не смог сохранить id пользователя. Авторизация невозможна.";
+			subtitleString = "ID storing error";
 			return false;
 		}
 		LdapAuthentication.closeLdapConnection();

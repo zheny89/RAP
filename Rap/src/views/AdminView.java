@@ -10,13 +10,17 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import database.LinkConnector;
@@ -71,8 +75,31 @@ public class AdminView implements View {
 		Text searchField = new Text(lowerHeaderComposite, SWT.BORDER | SWT.SEARCH);
 		searchField.setText("поиск...");
 		searchField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
-		
-		
+		searchField.addListener(SWT.FocusIn, new Listener()
+	    {
+	        @Override
+	        public void handleEvent(Event e)
+	        {
+	            if (searchField.getText().equals("поиск...")) searchField.setText("");
+	        }
+	    });
+		searchField.addModifyListener(new ModifyListener() {
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+				String regex = searchField.getText();
+				for (Worker worker : userList.keySet()) {
+					Composite pane = userList.get(worker);
+					GridData data = (GridData) pane.getLayoutData();
+					boolean excluded = !worker.getName().startsWith(regex);
+					pane.setVisible(!excluded);
+					data.exclude = excluded;
+				}
+				listComposite.layout(true);
+			}
+			
+		});
+				
 		listHolderComposite = new ScrolledComposite(lowerComposite, SWT.V_SCROLL);
 		listHolderComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
 		listComposite = new Composite(listHolderComposite, SWT.NONE);
@@ -95,7 +122,7 @@ public class AdminView implements View {
 		String currentDateString = RWT.getSettingStore().getAttribute("validDate");
 		LocalDate currentDate = LocalDate.parse(currentDateString);
 		LinkConnector.connect();
-		List<Worker> workers = LinkConnector.getWorkers();
+		List<Worker> workers = LinkConnector.getWorkersSortedByName();
 		for(Worker worker : workers) {
 			Composite compos = new Composite(listComposite, SWT.NONE);
 			compos.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
