@@ -97,30 +97,41 @@ public class LoginView implements View {
 			return false;
 		}
 		// провер€ем, есть ли в базе данных
+		LinkConnector.connect();
 		Worker worker = LinkConnector.getWorker(login);
 		if (worker == null) {
 			LdapAuthentication.getUsersAttribute(login, connection);
 			String name = LdapAuthentication.getCommonName();
 			try {
 				LinkConnector.addWorker(login, name, false);
-				LinkConnector.entityManager.refresh(worker);
+				worker = LinkConnector.getWorker(login);
 			} catch (EntryAlreadyExistsException e) {
 				e.printStackTrace(); // should never fire
+				subtitleString = "Unknown error";
+				LinkConnector.close();
+				return false;
 			}
+			LinkConnector.close();
+		}
+		// отмечаем пользовател€
+		try {
+			LinkConnector.logWorkerIn(worker.getId());
+		} catch (EntryNotExistsException e1) {
+			e1.printStackTrace(); // should never fire
+			subtitleString = "Unknown error";
+			return false;
 		}
 		// перестраиваем форму
 		try {
 			RWT.getSettingStore().setAttribute("userID", String.valueOf(worker.getId()));
-			LinkConnector.logWorkerIn(worker.getId());
 			if (worker.isAdmin())
 				enterPoint.changeView(View.Id.ADMIN_VIEW);
 			else enterPoint.changeView(View.Id.CLIENT_VIEW);
 		} catch (IOException e) {
 			subtitleString = "Ќе смог сохранить id пользовател€. јвторизаци€ невозможна.";
 			return false;
-		} catch (EntryNotExistsException e) {
-			e.printStackTrace(); // should never fire
 		}
+		LdapAuthentication.closeLdapConnection();
 		return true;
 	}
 }

@@ -1,10 +1,11 @@
 package views;
 
-import java.awt.Color;
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.eclipse.rap.rwt.client.service.ExitConfirmation;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.DisposeEvent;
@@ -13,13 +14,15 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+
+import database.LinkConnector;
+import database.Worker;
+import database.Worktime;
+import exception.EntryNotExistsException;
 
 public class AdminView implements View {
 	private Composite adminComposite, upperComposite, lowerComposite, lowerHeaderComposite, listComposite;
@@ -27,10 +30,12 @@ public class AdminView implements View {
 	private Button reportsButton,changeBaseButton,messageButton;
 	private Label titleLabel;
 	private int userID;
-	private ImageData iconData;
+	private ImageData greenIconData, greyIconData;
+	private Map<Worker, Composite> userList = new HashMap<Worker, Composite>();
 	
 	public AdminView(Composite parent) {
-		iconData = new ImageData(AdminView.class.getResourceAsStream("green.png"));
+		greenIconData = new ImageData(AdminView.class.getResourceAsStream("green.png"));
+		greyIconData = new ImageData(AdminView.class.getResourceAsStream("grey.png"));
 		
 		adminComposite = new Composite(parent, SWT.BORDER);
 		adminComposite.setLayoutData(new GridData(SWT.CENTER,SWT.CENTER,true,true));
@@ -38,7 +43,7 @@ public class AdminView implements View {
 		
 		upperComposite = new Composite(adminComposite, SWT.NONE);
 		upperComposite.setLayout(new GridLayout(3, true));
-		adminComposite.setLayoutData(new GridData(SWT.CENTER,SWT.CENTER,true,true));
+		upperComposite.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		reportsButton = new Button(upperComposite, SWT.PUSH);
 		reportsButton.setText("Отчеты");
@@ -63,16 +68,17 @@ public class AdminView implements View {
 		lowerHeaderComposite.setLayout(lowerHeaderLayout);
 		Label currentDateLabel = new Label(lowerHeaderComposite, SWT.NONE);
 		currentDateLabel.setText("Текущая дата: " + LocalDate.now().toString());
-		Text searchField = new Text(lowerHeaderComposite, SWT.BORDER);
+		Text searchField = new Text(lowerHeaderComposite, SWT.BORDER | SWT.SEARCH);
 		searchField.setText("поиск...");
 		searchField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+		
 		
 		listHolderComposite = new ScrolledComposite(lowerComposite, SWT.V_SCROLL);
 		listHolderComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
 		listComposite = new Composite(listHolderComposite, SWT.NONE);
 		listHolderComposite.setContent(listComposite);
 		
-		listComposite.setLayout(new GridLayout(2, false));
+		listComposite.setLayout(new GridLayout(3, true));
 		fillUsersList();
 		listComposite.setSize(listComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		
@@ -86,23 +92,31 @@ public class AdminView implements View {
 	}
 	
 	private void fillUsersList() {
-		//TODO: get worker list from DB
-		//List<Worker> workers = BasicApplication.database.getPresentUsers();
-		for(int i = 0; i < 50; i++) { // for (Worker worker : workers)
+		String currentDateString = RWT.getSettingStore().getAttribute("validDate");
+		LocalDate currentDate = LocalDate.parse(currentDateString);
+		LinkConnector.connect();
+		List<Worker> workers = LinkConnector.getWorkers();
+		for(Worker worker : workers) {
 			Composite compos = new Composite(listComposite, SWT.NONE);
 			compos.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 			compos.setLayout(new GridLayout(2, false));
 			
 			Label iconHolder = new Label(compos, SWT.NONE);
-			// if (database.getUserPresent(worker.getId(), new Date()))
-			Image icon = new Image(null, iconData);
-			// else icon = new Image(null, blackIconData);
+			Worktime workerAttended = null;
+			try {
+				workerAttended = LinkConnector.getWorktime(worker.getId(), currentDate);
+			} catch (EntryNotExistsException e) {
+				e.printStackTrace(); // should not fire
+			}
+			Image icon = new Image(null, (workerAttended == null) ? greyIconData : greenIconData);
 			iconHolder.setImage(icon);
 			
 			Button button = new Button(compos, SWT.PUSH);
-			button.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, true));
-			button.setText("Василченко Василий Васильевич"); // worker.getName()
+			button.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true));
+			button.setText(worker.getName());
+			userList.put(worker, compos);
 		}
+		LinkConnector.close();
 	}
 	
 	@Override
