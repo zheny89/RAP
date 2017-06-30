@@ -17,6 +17,7 @@ import views.View;
 
 
 public class BasicEntryPoint extends AbstractEntryPoint {
+	
 	private Composite parent;
 	private View currentView;
 	private int currentViewID;

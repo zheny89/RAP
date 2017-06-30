@@ -22,7 +22,8 @@ public class ClientView implements View {
 	private Composite clientComposite;
 	private int userID;
 	
-	public ClientView(Composite parent){
+	public ClientView(Composite parent) {
+		
 		userID = BasicEntryPoint.getUserID();
 		clientComposite = new Composite(parent, SWT.BORDER);
 		clientComposite.setLayoutData(new GridData(SWT.CENTER,SWT.CENTER,true,true));

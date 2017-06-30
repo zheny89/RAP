@@ -62,8 +62,8 @@ public class LoginView implements View {
 			public void handleEvent(Event event) {
 				String pswd = pswdText.getText();
 				String login = loginText.getText();
-				byte[] pasHash = encryptionPSWD(pswd);
-				identification(login, pasHash);
+				//byte[] pasHash = encryptionPSWD(pswd);
+				authenticateWorker(login, pswd);
 			}
 		});
 	}
@@ -73,9 +73,9 @@ public class LoginView implements View {
 		loginComposite.dispose();
 	}
 	
-	private boolean identification(String login, byte[] pswd){
+	private boolean authenticateWorker(String login, String pswd) {
 		//тест логин - пароль
-		if(false) return false;
+		if (false) return false;
 		Worker user = new Worker();
 		user.setId(1);
 		if(login.equals("admin")) user.setAdmin(true);
