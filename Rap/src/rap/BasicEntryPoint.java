@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import views.AdminView;
 import views.ClientView;
 import views.LoginView;
+import views.ReportView;
 import views.View;
 
 
@@ -38,7 +39,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 			viewClient();
 			break;
 		case 2:
-			viewAdminPanel();
+			viewReportPanel();
 			break;
 		default:
 			throw new RuntimeException("Неизвестное значение: "+currentViewID);
@@ -55,6 +56,10 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     
     private void viewAdminPanel(){
     	currentView = new AdminView(parent);
+    }
+    
+    private void viewReportPanel(){
+    	currentView = new ReportView(parent);
     }
     
     private int getCurrentViewID(){
