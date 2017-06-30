@@ -35,7 +35,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     private void setView(int viewID) {
         switch (currentViewID) {
 		case View.Id.LOGIN_VIEW: viewLogin(); break;
-		case View.Id.CLIENT_VIEW: viewAdminPanel(); break;
+		case View.Id.CLIENT_VIEW: viewReportPanel(); break;
 		case View.Id.ADMIN_VIEW: viewReportPanel(); break;
 		default: throw new RuntimeException("Неизвестное значение: "+currentViewID);
 		}
@@ -54,7 +54,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     }
     
     private void viewReportPanel(){
-    	currentView = new ReportView(parent);
+    	currentView = new ReportView(parent, LocalDate.of(2017, 5, 1), LocalDate.of(2017, 12, 12));
     }
     
     private int getCurrentViewID(){
@@ -68,11 +68,6 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     	return 0;
     }
     private String getCurrentDate(){
-//    	Calendar calendar = Calendar.getInstance();
-  //  	StringBuilder builder = new StringBuilder();
-    //	builder.append(calendar.get(Calendar.DAY_OF_MONTH)).append('.');
-    	//builder.append(calendar.get(Calendar.MONTH)+1).append('.');
-    //	builder.append(calendar.get(Calendar.YEAR));
     	return LocalDate.now().toString(); // yyyy-mm-dd
     }
     

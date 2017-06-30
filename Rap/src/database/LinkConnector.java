@@ -222,11 +222,21 @@ public class LinkConnector {
 	}
 	
 	/**
-	 * @return список работников
+	 * @return список отметок посещений
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Worktime> getWorktimes() {
 		Query q = entityManager.createQuery("SELECT w FROM Worktime w");
+		return q.getResultList();
+	}
+	
+	/**
+	 * @return список отметок посещений за период
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<Worktime> getWorktimes(LocalDate from, LocalDate to) {
+		Query q = entityManager.createQuery("SELECT w FROM Worktime w WHERE w.day < \'" 
+				+ to.toString() + "\' AND w.day > \'" + from.toString() + "\'");
 		return q.getResultList();
 	}
 	
