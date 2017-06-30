@@ -2,6 +2,9 @@ package views;
 
 import java.io.IOException;
 
+import javax.naming.NamingException;
+import javax.naming.ldap.LdapContext;
+
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -13,21 +16,26 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
+import database.LinkConnector;
 import database.Worker;
+import exception.EntryAlreadyExistsException;
+import exception.EntryNotExistsException;
+import ldap.LdapAuthentication;
 import rap.BasicEntryPoint;
 
 public class LoginView implements View {
 	private Button loginButton;
-	private Label loginLabel,pswdLabel,titleLabel;
+	private Label loginLabel,pswdLabel,titleLabel, subtitleLabel;
 	private Text loginText,pswdText;
 	private Composite loginComposite;
 	private BasicEntryPoint enterPoint;
 	private String titleString = "Вход в систему";
+	private String subtitleString = null;
 	private String loginString = "Логин";
 	private String pswdString = "Пароль";
 	private String buttonString = "Войти";
 	
-	public LoginView(Composite parent, BasicEntryPoint enterPoint){
+	public LoginView(Composite parent, BasicEntryPoint enterPoint) {
 		this.enterPoint = enterPoint;
 		parent.setLayout(new GridLayout());
 		loginComposite = new Composite(parent,SWT.BORDER);
@@ -41,6 +49,10 @@ public class LoginView implements View {
 		titleLabel = new Label(loginComposite,SWT.NONE);
 		titleLabel.setLayoutData(new GridData(SWT.CENTER,SWT.CENTER,true,true,2,1));
 		titleLabel.setText(titleString);
+		
+		subtitleLabel = new Label(loginComposite,SWT.NONE);
+		subtitleLabel.setLayoutData(new GridData(SWT.CENTER,SWT.CENTER,true,true,2,1));
+		//subtitleLabel.setText(subtitleString);
 		
 		loginLabel = new Label(loginComposite,SWT.NONE);
 		loginLabel.setText(loginString);
@@ -57,13 +69,14 @@ public class LoginView implements View {
 		loginButton = new Button(loginComposite, SWT.PUSH);
 		loginButton.setText(buttonString);
 		loginButton.setLayoutData(new GridData(SWT.CENTER,SWT.CENTER,true,true,2,1));
-		loginButton.addListener(SWT.MouseUp,new Listener() {
+		loginButton.addListener(SWT.MouseUp, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
 				String pswd = pswdText.getText();
 				String login = loginText.getText();
-				//byte[] pasHash = encryptionPSWD(pswd);
-				authenticateWorker(login, pswd);
+				boolean authSucc = authenticateWorker(login, pswd);
+				if (!authSucc)
+					subtitleLabel.setText(subtitleString);
 			}
 		});
 	}
@@ -74,26 +87,40 @@ public class LoginView implements View {
 	}
 	
 	private boolean authenticateWorker(String login, String pswd) {
-		//тест логин - пароль
-		if (false) return false;
-		Worker user = new Worker();
-		user.setId(1);
-		if(login.equals("admin")) user.setAdmin(true);
-		else user.setAdmin(false);
-		//User user = dbConnector.getUser(login);
-		try{
-		RWT.getSettingStore().setAttribute("userID", String.valueOf(user.getId()));
-		//dbConnector.logUserIn(user.getId());
-		if(!user.isAdmin()) enterPoint.changeView(1);
-		else enterPoint.changeView(2);
-		return true;
-		}catch (IOException e) {
-			System.err.println("Не смог сохранить id пользователя. Авторизация невозможна.");
+		// логиним по ldap
+		LdapContext connection = null;
+		try {
+			connection = LdapAuthentication.getConnection(login, pswd);
+		} catch (NamingException e) {
+			e.printStackTrace();
+			subtitleString = "Неправильный логин или пароль";
 			return false;
 		}
-	}
-	
-	private byte[] encryptionPSWD(String pswd){
-		return new byte[1];
+		// проверяем, есть ли в базе данных
+		Worker worker = LinkConnector.getWorker(login);
+		if (worker == null) {
+			LdapAuthentication.getUsersAttribute(login, connection);
+			String name = LdapAuthentication.getCommonName();
+			try {
+				LinkConnector.addWorker(login, name, false);
+				LinkConnector.entityManager.refresh(worker);
+			} catch (EntryAlreadyExistsException e) {
+				e.printStackTrace(); // should never fire
+			}
+		}
+		// перестраиваем форму
+		try {
+			RWT.getSettingStore().setAttribute("userID", String.valueOf(worker.getId()));
+			LinkConnector.logWorkerIn(worker.getId());
+			if (worker.isAdmin())
+				enterPoint.changeView(View.Id.ADMIN_VIEW);
+			else enterPoint.changeView(View.Id.CLIENT_VIEW);
+		} catch (IOException e) {
+			subtitleString = "Не смог сохранить id пользователя. Авторизация невозможна.";
+			return false;
+		} catch (EntryNotExistsException e) {
+			e.printStackTrace(); // should never fire
+		}
+		return true;
 	}
 }

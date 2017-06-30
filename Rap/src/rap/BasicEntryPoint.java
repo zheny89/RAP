@@ -31,19 +31,12 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     	setView(currentViewID);
     }
     
-    private void setView(int viewID){
+    private void setView(int viewID) {
         switch (currentViewID) {
-		case 0:
-	        viewLogin();
-			break;
-		case 1:
-			viewClient();
-			break;
-		case 2:
-			viewReportPanel();
-			break;
-		default:
-			throw new RuntimeException("Неизвестное значение: "+currentViewID);
+		case View.Id.LOGIN_VIEW: viewLogin(); break;
+		case View.Id.CLIENT_VIEW: viewClient(); break;
+		case View.Id.ADMIN_VIEW: viewReportPanel(); break;
+		default: throw new RuntimeException("Неизвестное значение: "+currentViewID);
 		}
     }
     
@@ -67,7 +60,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     	String currentViewString = store.getAttribute("currentView");
     	if(currentViewString != null){
     		String date = store.getAttribute("validDate");
-    		if(date.equals(getCurrentDate())){
+    		if(date.equals(getCurrentDate())) {
     			return Integer.valueOf(currentViewString);
     		}
     	}
