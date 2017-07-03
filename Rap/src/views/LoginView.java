@@ -121,7 +121,6 @@ public class LoginView implements View {
 				LinkConnector.close();
 				return false;
 			}
-			LinkConnector.close();
 		}
 		// отмечаем пользователя
 		try {
@@ -141,6 +140,7 @@ public class LoginView implements View {
 			subtitleString = "ID storing error";
 			return false;
 		}
+		LinkConnector.close();
 		LdapAuthentication.closeLdapConnection();
 		return true;
 	}

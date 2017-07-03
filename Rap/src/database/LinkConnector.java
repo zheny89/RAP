@@ -2,6 +2,7 @@ package database;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -251,11 +252,13 @@ public class LinkConnector {
 	/**
 	 * @return список отметок посещений работника за период, сортированный по дате
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<Worktime> getWorktimes(int workerId, LocalDate from, LocalDate to) {
-		Query q = entityManager.createQuery("SELECT w FROM Worktime w WHERE w.WORKER_ID = " + Integer.toString(workerId) 
-			+ " AND w.day < \'" + to.plusDays(1).toString() + "\' AND w.day > \'" + from.minusDays(1).toString() + "\' ORDER BY w.day");
-		return q.getResultList();
+		List<Worktime> wts = getWorktimes(from, to);
+		List<Worktime> res = new ArrayList<Worktime>();
+		for (Worktime wt : wts)
+			if (wt.getWorker().getId() == workerId)
+				res.add(wt);
+		return res;
 	}
 	
 	/**

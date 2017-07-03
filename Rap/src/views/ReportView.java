@@ -30,6 +30,7 @@ public class ReportView implements View {
 	private WorkerToWorktimesTable wwt;
 	
 	public ReportView(Composite parent, LocalDate fromDay, LocalDate toDay) {
+		if (!LinkConnector.isConnected()) LinkConnector.connect();
 		reportComposite = new Composite(parent, SWT.BORDER);
 		reportComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
 		reportComposite.setLayout(new GridLayout(1, false));
@@ -83,7 +84,7 @@ public class ReportView implements View {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-
+		if (LinkConnector.isConnected()) LinkConnector.close();
 	}
 
 }
