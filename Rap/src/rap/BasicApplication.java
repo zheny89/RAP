@@ -31,7 +31,7 @@ public class BasicApplication implements ApplicationConfiguration {
 			public void run() {
 				LinkConnector.connect();
 				
-				//LinkConnector.updateWorkerAdmin(101, true);
+				LinkConnector.updateWorkerFlag(2, (short) 2, LocalDate.of(2017, 6, 30));
 				
 				System.out.println("WORKER Table");
 				List<Worker> userList = LinkConnector.getWorkers();

@@ -21,8 +21,13 @@ public class WorkerToWorktimesTable extends Hashtable<Worker, Worktime[]> {
 		int contentIndex = 1, timesIndex = 0;
 		while (day.isBefore(toDay) || day.isEqual(toDay)) {
 			if (workerTimes.length == 0 || timesIndex >= workerTimes.length 
-					|| workerTimes[timesIndex].getDay().toLocalDate().isAfter(day))
-				itemContent[contentIndex++] = "0";
+					|| workerTimes[timesIndex].getDay().toLocalDate().isAfter(day)) {
+				// םו מעלוקאכסÿ
+				short flag = worker.getFlag();
+				if (flag != Worker.Flags.NONE && !day.isBefore(worker.getFlagStartDate().toLocalDate()))
+					itemContent[contentIndex++] = Worker.Flags.toSmallString(flag);
+				else itemContent[contentIndex++] = "0";
+			}
 			else
 				itemContent[contentIndex++] = Short.toString(workerTimes[timesIndex++].getHours());
 			day = day.plusDays(1);

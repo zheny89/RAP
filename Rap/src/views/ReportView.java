@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -21,14 +23,17 @@ import org.eclipse.swt.widgets.TableItem;
 import database.LinkConnector;
 import database.Worker;
 import database.WorkerToWorktimesTable;
+import rap.BasicEntryPoint;
 
 public class ReportView implements View {
 
+	private final BasicEntryPoint enterPoint;
 	private Composite reportComposite, headerComposite, tableComposite, footerComposite;
 	private List<Worker> workers;
 	private WorkerToWorktimesTable wwt;
 	
-	public ReportView(Composite parent, LocalDate fromDay, LocalDate toDay) {
+	public ReportView(BasicEntryPoint enterPoint, Composite parent, LocalDate fromDay, LocalDate toDay) {
+		this.enterPoint = enterPoint;
 		if (!LinkConnector.isConnected()) LinkConnector.connect();
 		reportComposite = new Composite(parent, SWT.BORDER);
 		reportComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
@@ -48,13 +53,23 @@ public class ReportView implements View {
 		
 		workers = LinkConnector.getWorkers();
 		wwt = LinkConnector.getWorkerToWorktimes(fromDay, toDay);		
-		Table table = createTable(tableComposite, fromDay, toDay);
+		createTable(tableComposite, fromDay, toDay);
 		
 		footerComposite = new Composite(reportComposite, SWT.NONE);
 		footerComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		footerComposite.setLayout(new RowLayout());
 		Button backButton = new Button(footerComposite, SWT.PUSH);
 		backButton.setText("Назад");
+		backButton.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				enterPoint.changeView(View.Id.ADMIN_VIEW);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) { /* not called */ }			
+		});
 	}
 	
 	private Table createTable(Composite parent, LocalDate fromDay, LocalDate toDay) {

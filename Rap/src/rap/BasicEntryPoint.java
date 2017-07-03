@@ -35,8 +35,9 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     private void setView(int viewID) {
         switch (currentViewID) {
 		case View.Id.LOGIN_VIEW: viewLogin(); break;
-		case View.Id.CLIENT_VIEW: viewAdminPanel(); break;
-		case View.Id.ADMIN_VIEW: viewReportPanel(); break;
+		case View.Id.CLIENT_VIEW: viewClientPanel(); break;
+		case View.Id.ADMIN_VIEW: viewAdminPanel(); break;
+		case View.Id.REPORT_VIEW: viewReportPanel(); break;
 		default: throw new RuntimeException("Неизвестное значение: "+currentViewID);
 		}
     }
@@ -54,7 +55,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     }
     
     private void viewReportPanel(){
-    	currentView = new ReportView(parent, LocalDate.of(2017, 6, 29), LocalDate.of(2017, 7, 4));
+    	currentView = new ReportView(this, parent, LocalDate.of(2017, 6, 29), LocalDate.of(2017, 7, 4));
     }
     
     private int getCurrentViewID(){

@@ -19,6 +19,27 @@ public class Worker {
 		static final short TIME_OFF = (short) 1;
 		static final short SICK_LEAVE = (short) 2;
 		static final short VACATION = (short) 3;
+		static final short FIRED = (short) 4;
+		
+		static String toString(short flag) {
+			switch(flag) {
+			case TIME_OFF : return "Отгул";
+			case SICK_LEAVE: return "Больничный";
+			case VACATION: return "Отпуск";
+			case FIRED: return "Уволен";
+			default: return "";
+			}
+		}
+		
+		static String toSmallString(short flag) {
+			switch(flag) {
+			case TIME_OFF : return "ОТГ";
+			case SICK_LEAVE: return "Б";
+			case VACATION: return "ОТ";
+			case FIRED: return "--";
+			default: return "?";
+			}
+		}
 	}
 	
 	@Id
