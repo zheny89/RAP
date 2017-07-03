@@ -6,24 +6,29 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.scripting.ClientListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import database.LinkConnector;
+import database.Message;
 import database.Worker;
 import database.Worktime;
 import exception.EntryNotExistsException;
@@ -116,6 +121,8 @@ public class AdminView implements View {
 				//iconData.			
 			}
 		});
+		
+		openMessageShell(parent);
 	}
 	
 	private void fillUsersList() {
@@ -149,5 +156,45 @@ public class AdminView implements View {
 	@Override
 	public void dispose() {
 		adminComposite.dispose();		
+	}
+	
+	private void openMessageShell(Composite parent) {
+		Shell shell = new Shell(parent.getShell(), SWT.DIALOG_TRIM);
+		shell.setLayout(new GridLayout(2, false));
+		Label headerLabel = new Label(shell, SWT.CENTER);
+		headerLabel.setText("Сообщения");
+		headerLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 2, 1));
+		ScrolledComposite mailListHolderComposite = new ScrolledComposite(shell, SWT.V_SCROLL);
+		mailListHolderComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true));
+		Composite mailListComposite = new Composite(mailListHolderComposite, SWT.NONE);
+		mailListHolderComposite.setContent(mailListComposite);
+		
+		mailListComposite.setLayout(new RowLayout(SWT.VERTICAL));
+		fillMailList(mailListComposite);
+		mailListComposite.setSize(mailListComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		
+		ScrolledComposite mailDetailHolderComposite = new ScrolledComposite(shell, SWT.V_SCROLL);
+		mailDetailHolderComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true));
+		Composite mailDetailComposite = new Composite(mailDetailHolderComposite, SWT.NONE);
+		mailDetailHolderComposite.setContent(mailDetailComposite);
+		shell.setVisible(true);
+	}
+	
+	private void fillMailList(Composite mailListComposite) {
+		LinkConnector.connect();
+		List<Message> unreadMessages = LinkConnector.getMessages(Message.Status.UNREAD);
+		List<Message> readMessages = LinkConnector.getMessages(Message.Status.READ);
+		for (Message msg : unreadMessages) {
+			Composite mailComposite = new Composite(mailListComposite, SWT.NONE);
+			mailComposite.setLayout(new RowLayout(SWT.VERTICAL));
+			Label dayLabel = new Label(mailComposite, SWT.RIGHT);
+			dayLabel.setText(msg.getDay().toString());
+			Label senderNameLabel = new Label(mailComposite, SWT.LEFT);
+			senderNameLabel.setText(msg.getSender().getName());
+			//mailComposite.setBackground(new Color(null, 255, 0, 0));
+			String scriptCode = "var handleEvent = function(event) { event.widget.setBackground(new Color(null, 255, 0, 0)); };";
+			mailComposite.addListener(SWT.MouseEnter, new ClientListener(scriptCode));
+		}
+		LinkConnector.close();
 	}
 }
