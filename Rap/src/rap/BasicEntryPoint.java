@@ -36,7 +36,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
         switch (currentViewID) {
 		case View.Id.LOGIN_VIEW: viewLogin(); break;
 		case View.Id.CLIENT_VIEW: viewAdminPanel(); break;
-		case View.Id.ADMIN_VIEW: viewClientPanel(); break;
+		case View.Id.ADMIN_VIEW: viewAdminPanel(); break;
 		default: throw new RuntimeException("Неизвестное значение: "+currentViewID);
 		}
     }

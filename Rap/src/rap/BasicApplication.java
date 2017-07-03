@@ -31,7 +31,7 @@ public class BasicApplication implements ApplicationConfiguration {
 			public void run() {
 				LinkConnector.connect();
 				
-				LinkConnector.updateWorkerAdmin(101, true);
+				//LinkConnector.updateWorkerAdmin(101, true);
 				
 				System.out.println("WORKER Table");
 				List<Worker> userList = LinkConnector.getWorkers();

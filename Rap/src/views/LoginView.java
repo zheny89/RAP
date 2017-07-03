@@ -7,6 +7,8 @@ import javax.naming.ldap.LdapContext;
 
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -46,6 +48,7 @@ public class LoginView implements View {
 		GridLayout gridLay = new GridLayout(2,false);
 		loginComposite.setLayout(gridLay);
 		
+		
 		titleLabel = new Label(loginComposite,SWT.NONE);
 		titleLabel.setLayoutData(new GridData(SWT.CENTER,SWT.CENTER,true,true,2,1));
 		titleLabel.setText(titleString);
@@ -66,6 +69,22 @@ public class LoginView implements View {
 		
 		pswdText = new Text(loginComposite,SWT.BORDER|SWT.PASSWORD);
 		pswdText.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
+		pswdText.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR){
+					login();
+				}
+				
+			}
+		});
 		
 		loginButton = new Button(loginComposite, SWT.PUSH);
 		loginButton.setText(buttonString);
@@ -73,17 +92,21 @@ public class LoginView implements View {
 		loginButton.addListener(SWT.MouseUp, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				String pswd = pswdText.getText();
-				String login = loginText.getText();
-				boolean authSucc = authenticateWorker(login, pswd);
-				if (!authSucc) {
-					subtitleLabel.setText(subtitleString);
-					subtitleLabel.setVisible(true);
-					loginComposite.pack();
-					loginComposite.requestLayout();
-				}
+				login();
 			}
 		});
+	}
+	
+	private void login(){
+		String pswd = pswdText.getText();
+		String login = loginText.getText();
+		boolean authSucc = authenticateWorker(login, pswd);
+		if (!authSucc) {
+			subtitleLabel.setText(subtitleString);
+			subtitleLabel.setVisible(true);
+			loginComposite.pack();
+			loginComposite.requestLayout();
+		}
 	}
 	
 	@Override
@@ -121,7 +144,7 @@ public class LoginView implements View {
 				LinkConnector.close();
 				return false;
 			}
-			LinkConnector.close();
+			
 		}
 		// отмечаем пользователя
 		try {
@@ -141,6 +164,7 @@ public class LoginView implements View {
 			subtitleString = "ID storing error";
 			return false;
 		}
+		LinkConnector.close();
 		LdapAuthentication.closeLdapConnection();
 		return true;
 	}
