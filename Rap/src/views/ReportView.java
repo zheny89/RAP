@@ -1,6 +1,7 @@
 package views;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -14,15 +15,19 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
 import database.LinkConnector;
+import database.Worker;
+import database.WorkerToWorktimesTable;
 import database.Worktime;
 
 public class ReportView implements View {
 
 	private Composite reportComposite, headerComposite, tableComposite, footerComposite;
-	private List<Worktime> worktimes;
+	private List<Worker> workers;
+	private WorkerToWorktimesTable wwt;
 	
 	public ReportView(Composite parent, LocalDate fromDay, LocalDate toDay) {
 		reportComposite = new Composite(parent, SWT.BORDER);
@@ -39,19 +44,9 @@ public class ReportView implements View {
 		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableComposite.setLayout(new FillLayout());
 		
-		worktimes = LinkConnector.getWorktimes(fromDay, toDay);
-		
-		Table table = new Table (tableComposite, SWT.VIRTUAL | SWT.BORDER);
-		  table.setItemCount(3); // TODO: it's workers size, not worktimes!
-		  table.addListener (SWT.SetData, new Listener() {
-			  @Override
-			  public void handleEvent (Event event) {
-		          TableItem item = (TableItem) event.item;
-		          int index = table.indexOf (item);
-		          item.setText(worktimes.get(index).getWorker().getName());
-		      }
-		  }); 
-
+		workers = LinkConnector.getWorkers();
+		wwt = LinkConnector.getWorkerToWorktimes(fromDay, toDay);		
+		Table table = createTable(tableComposite, fromDay, toDay);
 		
 		footerComposite = new Composite(reportComposite, SWT.NONE);
 		footerComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -60,6 +55,31 @@ public class ReportView implements View {
 		backButton.setText("Назад");
 	}
 	
+	private Table createTable(Composite parent, LocalDate fromDay, LocalDate toDay) {
+		Table table = new Table (tableComposite, SWT.VIRTUAL | SWT.BORDER);
+		TableColumn nameColumn = new TableColumn(table, SWT.LEFT);
+		List<TableColumn> dateColumns = new ArrayList<TableColumn>();
+		LocalDate day = LocalDate.ofEpochDay(fromDay.toEpochDay());
+		while (day.isBefore(toDay) || day.isEqual(toDay)) {
+			TableColumn dateColumn = new TableColumn(table, SWT.CENTER);
+			dateColumn.setText(day.toString());
+			dateColumns.add(dateColumn);
+			day = day.plusDays(1);
+		};
+		table.setHeaderVisible(true);
+		table.setItemCount(workers.size());
+		table.addListener(SWT.SetData, new Listener() {
+			  @Override
+			  public void handleEvent (Event event) {
+		          TableItem item = (TableItem) event.item;
+		          int index = table.indexOf(item);
+		          Worker w = workers.get(index);
+		          item.setText("");
+		      }
+		  }); 
+		return table;
+	}
+
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub

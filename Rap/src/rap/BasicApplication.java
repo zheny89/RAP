@@ -31,8 +31,8 @@ public class BasicApplication implements ApplicationConfiguration {
 			public void run() {
 				LinkConnector.connect();
 				
-				//LinkConnector.updateWorkerFlag(2, Worker.Flags.SICK_LEAVE, null);
-								
+				LinkConnector.updateWorkerAdmin(101, true);
+				
 				System.out.println("WORKER Table");
 				List<Worker> userList = LinkConnector.getWorkers();
 		        for (Worker usr : userList) {

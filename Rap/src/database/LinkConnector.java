@@ -213,6 +213,14 @@ public class LinkConnector {
 	}
 	
 	/**
+	 * @return количество работников в списке
+	 */
+	public static int getWorkersCount() {
+		Query q = entityManager.createQuery("SELECT COUNT(1) FROM Worker w");
+		return (Integer) q.getSingleResult();
+	}
+	
+	/**
 	 * @return список работников
 	 */
 	@SuppressWarnings("unchecked")
@@ -231,12 +239,22 @@ public class LinkConnector {
 	}
 	
 	/**
-	 * @return список отметок посещений за период
+	 * @return список отметок посещений за период, сортированный по дате
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Worktime> getWorktimes(LocalDate from, LocalDate to) {
 		Query q = entityManager.createQuery("SELECT w FROM Worktime w WHERE w.day < \'" 
-				+ to.toString() + "\' AND w.day > \'" + from.toString() + "\'");
+				+ to.toString() + "\' AND w.day > \'" + from.toString() + "\' ORDER BY w.day");
+		return q.getResultList();
+	}
+	
+	/**
+	 * @return список отметок посещений работника за период, сортированный по дате
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<Worktime> getWorktimes(int workerId, LocalDate from, LocalDate to) {
+		Query q = entityManager.createQuery("SELECT w FROM Worktime w WHERE w.WORKER_ID = " + Integer.toString(workerId) 
+			+ " AND w.day < \'" + to.plusDays(1).toString() + "\' AND w.day > \'" + from.minusDays(1).toString() + "\' ORDER BY w.day");
 		return q.getResultList();
 	}
 	
@@ -248,6 +266,37 @@ public class LinkConnector {
 	public static List<Message> getMessages(short messageStatus) {
 		Query q = entityManager.createQuery("SELECT m FROM Message m WHERE m.status = " + Short.toString(messageStatus));
 		return q.getResultList();
+	}
+	
+	/**
+	 * @param from с даты
+	 * @param to по дату
+	 * @return все отметки о посещениях в указанный период, сортированные по дате и соотнесённые с работниками
+	 */
+	public static WorkerToWorktimesTable getWorkerToWorktimes(LocalDate from, LocalDate to) {
+		List<Worker> workers = getWorkers();
+		WorkerToWorktimesTable wwt = new WorkerToWorktimesTable(from, to);
+		for (Worker worker : workers) {
+			List<Worktime> wt = getWorktimes(worker.getId(), from, to);
+			if (wt == null)
+				wwt.put(worker, new Worktime[0]);
+			else
+				wwt.put(worker, wt.toArray(new Worktime[wt.size()]));
+		}
+		return wwt;
+	}
+	
+	/**
+	 * 
+	 * @param workerId
+	 * @param isAdmin
+	 */
+	public static void updateWorkerAdmin(int workerId, boolean isAdmin) {
+		Worker worker = getWorker(workerId);
+		entityManager.getTransaction().begin();
+		worker.setAdmin(isAdmin);
+		entityManager.persist(worker);
+		entityManager.getTransaction().commit();
 	}
 
 }

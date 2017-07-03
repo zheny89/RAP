@@ -112,7 +112,8 @@ public class LoginView implements View {
 			LdapAuthentication.getUsersAttribute(login, connection);
 			String name = LdapAuthentication.getCommonName();
 			try {
-				LinkConnector.addWorker(login, name, false);
+				boolean isAdmin = LinkConnector.getWorkersCount() == 0;
+				LinkConnector.addWorker(login, name, isAdmin);
 				worker = LinkConnector.getWorker(login);
 			} catch (EntryAlreadyExistsException e) {
 				e.printStackTrace(); // should never fire
