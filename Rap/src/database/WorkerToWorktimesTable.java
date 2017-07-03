@@ -12,23 +12,23 @@ public class WorkerToWorktimesTable extends Hashtable<Worker, Worktime[]> {
 		this.toDay = toDay;
 	}
 	
-	/*public String[] getTableItemContent(Worker worker) {
+	public String[] getTableItemContent(Worker worker) {
 		int numDayColumns = (int) (toDay.toEpochDay() - fromDay.toEpochDay() + 1);
 		String[] itemContent = new String[1 + numDayColumns];
 		itemContent[0] = worker.getName();
 		Worktime[] workerTimes = this.get(worker);
 		LocalDate day = LocalDate.ofEpochDay(fromDay.toEpochDay());
-		int index = 1;
+		int contentIndex = 1, timesIndex = 0;
 		while (day.isBefore(toDay) || day.isEqual(toDay)) {
-			if (workerTimes.length == 0 || workerTimes[index].getDay().toLocalDate().isAfter(day))
-				itemContent[index] = "0";
-			else {
-				//itemContent[index] = workerTimes[index];
-				++index;
-			}
+			if (workerTimes.length == 0 || timesIndex >= workerTimes.length 
+					|| workerTimes[timesIndex].getDay().toLocalDate().isAfter(day))
+				itemContent[contentIndex++] = "0";
+			else
+				itemContent[contentIndex++] = Short.toString(workerTimes[timesIndex++].getHours());
 			day = day.plusDays(1);
 		}
-	}*/
+		return itemContent;
+	}
 	
 	public Worktime getWorktime(Worker worker, LocalDate day) {
 		Worktime[] wts = this.get(worker);

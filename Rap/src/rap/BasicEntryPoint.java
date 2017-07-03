@@ -54,7 +54,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     }
     
     private void viewReportPanel(){
-    	currentView = new ReportView(parent, LocalDate.of(2017, 5, 1), LocalDate.of(2017, 12, 12));
+    	currentView = new ReportView(parent, LocalDate.of(2017, 6, 29), LocalDate.of(2017, 7, 4));
     }
     
     private int getCurrentViewID(){
