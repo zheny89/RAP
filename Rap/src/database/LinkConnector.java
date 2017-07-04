@@ -245,7 +245,7 @@ public class LinkConnector {
 	@SuppressWarnings("unchecked")
 	public static List<Worktime> getWorktimes(LocalDate from, LocalDate to) {
 		Query q = entityManager.createQuery("SELECT w FROM Worktime w WHERE w.day < \'" 
-				+ to.toString() + "\' AND w.day > \'" + from.toString() + "\' ORDER BY w.day");
+				+ to.plusDays(1).toString() + "\' AND w.day > \'" + from.minusDays(1).toString() + "\' ORDER BY w.day");
 		return q.getResultList();
 	}
 	
@@ -300,6 +300,24 @@ public class LinkConnector {
 		worker.setAdmin(isAdmin);
 		entityManager.persist(worker);
 		entityManager.getTransaction().commit();
+	}
+	
+	/**
+	 * отмечает сообщение как прочитанное / не прочитанное
+	 * @param msgId
+	 * @param status
+	 */
+	public static void updateMessageStatus(int msgId, short status) {
+		Message msg = getMessage(msgId);
+		entityManager.getTransaction().begin();
+		msg.setStatus(status);
+		entityManager.persist(msg);
+		entityManager.getTransaction().commit();
+	}
+
+	private static Message getMessage(int id) {
+		Message msg = entityManager.find(Message.class, id);
+		return msg;
 	}
 
 }

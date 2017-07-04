@@ -2,7 +2,6 @@ package rap;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Calendar;
 
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
@@ -13,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import views.AdminView;
 import views.ClientView;
 import views.LoginView;
+import views.MailView;
 import views.ReportView;
 import views.View;
 
@@ -38,7 +38,8 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 		case View.Id.CLIENT_VIEW: viewClientPanel(); break;
 		case View.Id.ADMIN_VIEW: viewAdminPanel(); break;
 		case View.Id.REPORT_VIEW: viewReportPanel(); break;
-		default: throw new RuntimeException("Неизвестное значение: "+currentViewID);
+		case View.Id.MAIL_VIEW: viewMailPanel(); break;
+		default: throw new RuntimeException("Неизвестное значение: " + currentViewID);
 		}
     }
     
@@ -51,11 +52,15 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     }
     
     private void viewAdminPanel(){
-    	currentView = new AdminView(parent);
+    	currentView = new AdminView(this, parent);
     }
     
     private void viewReportPanel(){
     	currentView = new ReportView(this, parent, LocalDate.of(2017, 6, 29), LocalDate.of(2017, 7, 4));
+    }
+    
+    private void viewMailPanel(){
+    	currentView = new MailView(this, parent);
     }
     
     private int getCurrentViewID(){

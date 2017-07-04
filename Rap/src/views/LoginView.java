@@ -106,7 +106,6 @@ public class LoginView implements View {
 			return false;
 		}
 		// проверяем, есть ли в базе данных
-		LinkConnector.connect();
 		Worker worker = LinkConnector.getWorker(login);
 		if (worker == null) {
 			LdapAuthentication.getUsersAttribute(login, connection);
@@ -140,7 +139,6 @@ public class LoginView implements View {
 			subtitleString = "ID storing error";
 			return false;
 		}
-		LinkConnector.close();
 		LdapAuthentication.closeLdapConnection();
 		return true;
 	}

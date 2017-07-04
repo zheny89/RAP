@@ -27,14 +27,13 @@ import rap.BasicEntryPoint;
 
 public class ReportView implements View {
 
-	private final BasicEntryPoint enterPoint;
+	//private final BasicEntryPoint enterPoint;
 	private Composite reportComposite, headerComposite, tableComposite, footerComposite;
 	private List<Worker> workers;
 	private WorkerToWorktimesTable wwt;
 	
 	public ReportView(BasicEntryPoint enterPoint, Composite parent, LocalDate fromDay, LocalDate toDay) {
-		this.enterPoint = enterPoint;
-		if (!LinkConnector.isConnected()) LinkConnector.connect();
+		//this.enterPoint = enterPoint;
 		reportComposite = new Composite(parent, SWT.BORDER);
 		reportComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
 		reportComposite.setLayout(new GridLayout(1, false));
@@ -104,8 +103,6 @@ public class ReportView implements View {
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-		if (LinkConnector.isConnected()) LinkConnector.close();
 	}
 
 }

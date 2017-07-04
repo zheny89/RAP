@@ -13,14 +13,18 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -32,8 +36,10 @@ import database.Message;
 import database.Worker;
 import database.Worktime;
 import exception.EntryNotExistsException;
+import rap.BasicEntryPoint;
 
 public class AdminView implements View {
+	BasicEntryPoint enterPoint;
 	private Composite adminComposite, upperComposite, lowerComposite, lowerHeaderComposite, listComposite;
 	private ScrolledComposite listHolderComposite;
 	private Button reportsButton,changeBaseButton,messageButton;
@@ -42,7 +48,8 @@ public class AdminView implements View {
 	private ImageData greenIconData, greyIconData;
 	private Map<Worker, Composite> userList = new HashMap<Worker, Composite>();
 	
-	public AdminView(Composite parent) {
+	public AdminView(BasicEntryPoint enterPoint, Composite parent) {
+		this.enterPoint = enterPoint;
 		greenIconData = new ImageData(AdminView.class.getResourceAsStream("green.png"));
 		greyIconData = new ImageData(AdminView.class.getResourceAsStream("grey.png"));
 		
@@ -57,6 +64,18 @@ public class AdminView implements View {
 		reportsButton = new Button(upperComposite, SWT.PUSH);
 		reportsButton.setText("Отчеты");
 		reportsButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		reportsButton.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				new ReportDialog(parent.getShell()).open();
+				//enterPoint.changeView(View.Id.REPORT_VIEW);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {/*not called*/}
+			
+		});
 		
 		changeBaseButton = new Button(upperComposite, SWT.PUSH);
 		changeBaseButton.setText("Редактирование базы");
@@ -65,6 +84,17 @@ public class AdminView implements View {
 		messageButton = new Button(upperComposite, SWT.PUSH);
 		messageButton.setText("10");
 		messageButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		messageButton.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				enterPoint.changeView(View.Id.MAIL_VIEW);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {/* never called */}
+			
+		});
 		
 		lowerComposite = new Composite(adminComposite, SWT.NONE);
 		lowerComposite.setLayout(new GridLayout(1, false));
@@ -115,20 +145,16 @@ public class AdminView implements View {
 		listComposite.setSize(listComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		
 		adminComposite.addDisposeListener(new DisposeListener() {
-			
 			@Override
 			public void widgetDisposed(DisposeEvent event) {
 				//iconData.			
 			}
 		});
-		
-		openMessageShell(parent);
 	}
 	
 	private void fillUsersList() {
 		String currentDateString = RWT.getSettingStore().getAttribute("validDate");
 		LocalDate currentDate = LocalDate.parse(currentDateString);
-		LinkConnector.connect();
 		List<Worker> workers = LinkConnector.getWorkersSortedByName();
 		for(Worker worker : workers) {
 			Composite compos = new Composite(listComposite, SWT.NONE);
@@ -150,7 +176,6 @@ public class AdminView implements View {
 			button.setText(worker.getName());
 			userList.put(worker, compos);
 		}
-		LinkConnector.close();
 	}
 	
 	@Override
@@ -158,43 +183,5 @@ public class AdminView implements View {
 		adminComposite.dispose();		
 	}
 	
-	private void openMessageShell(Composite parent) {
-		Shell shell = new Shell(parent.getShell(), SWT.DIALOG_TRIM);
-		shell.setLayout(new GridLayout(2, false));
-		Label headerLabel = new Label(shell, SWT.CENTER);
-		headerLabel.setText("Сообщения");
-		headerLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 2, 1));
-		ScrolledComposite mailListHolderComposite = new ScrolledComposite(shell, SWT.V_SCROLL);
-		mailListHolderComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true));
-		Composite mailListComposite = new Composite(mailListHolderComposite, SWT.NONE);
-		mailListHolderComposite.setContent(mailListComposite);
-		
-		mailListComposite.setLayout(new RowLayout(SWT.VERTICAL));
-		fillMailList(mailListComposite);
-		mailListComposite.setSize(mailListComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		
-		ScrolledComposite mailDetailHolderComposite = new ScrolledComposite(shell, SWT.V_SCROLL);
-		mailDetailHolderComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true));
-		Composite mailDetailComposite = new Composite(mailDetailHolderComposite, SWT.NONE);
-		mailDetailHolderComposite.setContent(mailDetailComposite);
-		shell.setVisible(true);
-	}
 	
-	private void fillMailList(Composite mailListComposite) {
-		LinkConnector.connect();
-		List<Message> unreadMessages = LinkConnector.getMessages(Message.Status.UNREAD);
-		List<Message> readMessages = LinkConnector.getMessages(Message.Status.READ);
-		for (Message msg : unreadMessages) {
-			Composite mailComposite = new Composite(mailListComposite, SWT.NONE);
-			mailComposite.setLayout(new RowLayout(SWT.VERTICAL));
-			Label dayLabel = new Label(mailComposite, SWT.RIGHT);
-			dayLabel.setText(msg.getDay().toString());
-			Label senderNameLabel = new Label(mailComposite, SWT.LEFT);
-			senderNameLabel.setText(msg.getSender().getName());
-			//mailComposite.setBackground(new Color(null, 255, 0, 0));
-			String scriptCode = "var handleEvent = function(event) { event.widget.setBackground(new Color(null, 255, 0, 0)); };";
-			mailComposite.addListener(SWT.MouseEnter, new ClientListener(scriptCode));
-		}
-		LinkConnector.close();
-	}
 }

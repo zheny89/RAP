@@ -10,6 +10,9 @@ import javax.persistence.Query;
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.client.WebClient;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
 import database.LinkConnector;
 import database.Message;
@@ -25,13 +28,11 @@ public class BasicApplication implements ApplicationConfiguration {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(WebClient.PAGE_TITLE, "Система");
         application.addEntryPoint("/home", BasicEntryPoint.class, properties);
+       
         
         new Thread(new Runnable() {
 			@Override
 			public void run() {
-				LinkConnector.connect();
-				
-				LinkConnector.updateWorkerFlag(2, (short) 2, LocalDate.of(2017, 6, 30));
 				
 				System.out.println("WORKER Table");
 				List<Worker> userList = LinkConnector.getWorkers();
@@ -53,8 +54,6 @@ public class BasicApplication implements ApplicationConfiguration {
 		            System.out.println(msg.toString());
 		        }
 		        System.out.println("Size: " + msgList.size());
-		        
-		        LinkConnector.close();
 			}
         	
         }).start();
