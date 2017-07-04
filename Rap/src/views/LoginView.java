@@ -31,7 +31,7 @@ public class LoginView implements View {
 	private Text loginText,pswdText;
 	private Composite loginComposite;
 	private BasicEntryPoint enterPoint;
-	private String titleString = "Âõîä â ñèñòåìó";
+	private String titleString = "Вход в систему";
 	private String subtitleString = "";
 	private String loginString = "Ëîãèí";
 	private String pswdString = "Ïàðîëü";
