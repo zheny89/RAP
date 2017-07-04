@@ -81,7 +81,8 @@ public class AdminView implements View {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				new ReportDialog(parent.getShell()).open();
+				ReportDialog dial = new ReportDialog(enterPoint, parent.getShell());
+				dial.open();
 				//enterPoint.changeView(View.Id.REPORT_VIEW);
 			}
 

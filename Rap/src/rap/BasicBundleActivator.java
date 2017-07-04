@@ -10,6 +10,7 @@ public class BasicBundleActivator implements BundleActivator {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		LinkConnector.connect();
+		System.out.println("Connection to database established");
 	}
 
 	@Override

@@ -7,7 +7,10 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.client.service.JavaScriptExecutor;
 import org.eclipse.rap.rwt.service.SettingStore;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Shell;
 
 import views.AdminView;
 import views.ClientView;
@@ -23,6 +26,16 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 	private View currentView;
 	private int currentViewID;
 	private SettingStore store;
+	
+	public void storeReportPeriod(LocalDate fromDay, LocalDate toDay) {
+		try {
+			store.setAttribute("reportStart", fromDay.toString());
+			store.setAttribute("reportEnd", toDay.toString());
+		} catch (IOException e) {
+			System.err.println("Не удалось сохранить даты отчётов.");
+		}	
+	}
+	
     @Override
     protected void createContents(Composite parent) {
         this.parent = parent;
@@ -35,12 +48,11 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     private void setView(int viewID) {
         switch (currentViewID) {
 		case View.Id.LOGIN_VIEW: viewLogin(); break;
-
 		case View.Id.CLIENT_VIEW: viewClientPanel(); break;
 		case View.Id.ADMIN_VIEW: viewAdminPanel(); break;
 		case View.Id.REPORT_VIEW: viewReportPanel(); break;
 		case View.Id.MAIL_VIEW: viewMailPanel(); break;
-		default: throw new RuntimeException("Íåèçâåñòíîå çíà÷åíèå: " + currentViewID);
+		default: throw new RuntimeException("Неизвестное значение: " + currentViewID);
 
 		}
     }
@@ -58,7 +70,9 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     }
     
     private void viewReportPanel(){
-    	currentView = new ReportView(this, parent, LocalDate.of(2017, 6, 29), LocalDate.of(2017, 7, 4));
+    	LocalDate fromDay = LocalDate.parse(store.getAttribute("reportStart"));
+    	LocalDate toDay = LocalDate.parse(store.getAttribute("reportEnd"));
+    	currentView = new ReportView(this, parent, fromDay, toDay);
     }
     
     private void viewMailPanel(){
