@@ -24,19 +24,19 @@ public class Worker {
 		
 		static String toString(short flag) {
 			switch(flag) {
-			case TIME_OFF : return "Îòãóë";
-			case SICK_LEAVE: return "Áîëüíè÷íûé";
-			case VACATION: return "Îòïóñê";
-			case FIRED: return "Óâîëåí";
+			case TIME_OFF : return "В отгуле";
+			case SICK_LEAVE: return "На больничном";
+			case VACATION: return "В отпуске";
+			case FIRED: return "Уволен";
 			default: return "";
 			}
 		}
 		
 		static String toSmallString(short flag) {
 			switch(flag) {
-			case TIME_OFF : return "ÎÒÃ";
-			case SICK_LEAVE: return "Á";
-			case VACATION: return "ÎÒ";
+			case TIME_OFF : return "ОТГ";
+			case SICK_LEAVE: return "Б";
+			case VACATION: return "ОТ";
 			case FIRED: return "--";
 			default: return "?";
 			}

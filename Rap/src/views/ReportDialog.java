@@ -19,13 +19,13 @@ import rap.BasicEntryPoint;
 
 public class ReportDialog extends Shell {
 	
-	private BasicEntryPoint enterPoint;
+	//private BasicEntryPoint enterPoint;
 	private Button dayButton, periodButton;
 	private DateTime dayCalendar, periodStartCalendar, periodEndCalendar;
 
 	public ReportDialog(BasicEntryPoint enterPoint, Shell parent) {
 		super(parent);
-		this.enterPoint = enterPoint;
+		//this.enterPoint = enterPoint;
 		this.setText("Отчет");
 		this.setLayout(new GridLayout(1, false));
 
@@ -55,7 +55,9 @@ public class ReportDialog extends Shell {
 		});
 		dayCalendar = new DateTime(dayComposite, SWT.DATE | SWT.MEDIUM | SWT.BORDER | SWT.DROP_DOWN);
 		LocalDate today = LocalDate.now();
-		dayCalendar.setDate(today.getYear(), today.getMonthValue(), today.getDayOfMonth());
+		dayCalendar.setDate(today.getYear(),
+				today.getMonthValue() - 1, // в DateTime месяцы нумеруются с 0 до 11
+				today.getDayOfMonth());
 		
 		Composite periodComposite = new Composite(pane, SWT.NONE);
 		periodComposite.setLayout(new GridLayout(4, false));
@@ -77,12 +79,12 @@ public class ReportDialog extends Shell {
 			
 		});
 		periodStartCalendar = new DateTime(periodComposite, SWT.DATE | SWT.MEDIUM | SWT.BORDER | SWT.DROP_DOWN);
-		periodStartCalendar.setDate(today.getYear(), today.getMonthValue(), today.getDayOfMonth());
+		periodStartCalendar.setDate(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth());
 		Label toLabel = new Label(periodComposite, SWT.CENTER);
 		toLabel.setText(" по: ");
 		toLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		periodEndCalendar = new DateTime(periodComposite, SWT.DATE | SWT.MEDIUM | SWT.BORDER | SWT.DROP_DOWN);
-		periodEndCalendar.setDate(today.getYear(), today.getMonthValue(), today.getDayOfMonth());
+		periodEndCalendar.setDate(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth());
 		periodStartCalendar.setEnabled(false);
 		periodEndCalendar.setEnabled(false);
 		
@@ -94,8 +96,8 @@ public class ReportDialog extends Shell {
 			public void widgetSelected(SelectionEvent e) {
 				DateTime startWidget = (dayButton.getSelection()) ? dayCalendar : periodStartCalendar;
 				DateTime endWidget = (dayButton.getSelection()) ? dayCalendar : periodEndCalendar;
-				LocalDate periodStart = LocalDate.of(startWidget.getYear(), startWidget.getMonth(), startWidget.getDay());
-				LocalDate periodEnd = LocalDate.of(endWidget.getYear(), endWidget.getMonth(), endWidget.getDay());
+				LocalDate periodStart = LocalDate.of(startWidget.getYear(), startWidget.getMonth() + 1, startWidget.getDay());
+				LocalDate periodEnd = LocalDate.of(endWidget.getYear(), endWidget.getMonth() + 1, endWidget.getDay());
 				enterPoint.storeReportPeriod(periodStart, periodEnd);
 				enterPoint.changeView(View.Id.REPORT_VIEW);
 			}

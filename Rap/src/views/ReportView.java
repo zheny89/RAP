@@ -43,8 +43,8 @@ public class ReportView implements View {
 		headerComposite.setLayout(new FillLayout());
 		Label headerLabel = new Label(headerComposite, SWT.CENTER);
 		if (fromDay.isEqual(toDay))
-			headerLabel.setText("Отчет за " + fromDay.toString());
-		else headerLabel.setText("Отчет за период с " + fromDay.toString() + " по " + toDay.toString());
+			headerLabel.setText("РћС‚С‡РµС‚ Р·Р° " + fromDay.toString());
+		else headerLabel.setText("РћС‚С‡РµС‚ Р·Р° РїРµСЂРёРѕРґ СЃ " + fromDay.toString() + " РїРѕ " + toDay.toString());
 		
 		tableComposite = new Composite(reportComposite, SWT.BORDER);
 		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -58,7 +58,7 @@ public class ReportView implements View {
 		footerComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		footerComposite.setLayout(new RowLayout());
 		Button backButton = new Button(footerComposite, SWT.PUSH);
-		backButton.setText("Назад");
+		backButton.setText("РќР°Р·Р°Рґ");
 		backButton.addSelectionListener(new SelectionListener() {
 
 			@Override
