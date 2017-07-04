@@ -44,7 +44,7 @@ public class ReportView implements View {
 		Label headerLabel = new Label(headerComposite, SWT.CENTER);
 		if (fromDay.isEqual(toDay))
 			headerLabel.setText("Отчет за " + fromDay.toString());
-		else headerLabel.setText("Отчет за период с" + fromDay.toString() + " по " + toDay.toString());
+		else headerLabel.setText("Отчет за период с " + fromDay.toString() + " по " + toDay.toString());
 		
 		tableComposite = new Composite(reportComposite, SWT.BORDER);
 		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

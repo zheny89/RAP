@@ -47,7 +47,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     
     private void setView(int viewID) {
         switch (currentViewID) {
-		case View.Id.LOGIN_VIEW: viewLogin(); break;
+		case View.Id.LOGIN_VIEW: viewLoginPanel(); break;
 		case View.Id.CLIENT_VIEW: viewClientPanel(); break;
 		case View.Id.ADMIN_VIEW: viewAdminPanel(); break;
 		case View.Id.REPORT_VIEW: viewReportPanel(); break;
@@ -57,7 +57,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 		}
     }
     
-    private void viewLogin(){
+    private void viewLoginPanel(){
     	currentView = new LoginView(parent,this);
     }
     
@@ -99,7 +99,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     			store.setAttribute("currentView", String.valueOf(viewID));
     			store.setAttribute("validDate", getCurrentDate());
     		} catch (IOException e) {
-    			System.err.println("Íå ñìîã ñîõðàíèòü äàííûå. Èäåíòèôèêàöèÿ íåâîçìîæíà.");
+    			System.err.println("Не удалось сохранить дату.");
     		}
     	JavaScriptExecutor jsExecutor = RWT.getClient().getService(JavaScriptExecutor.class);
     	jsExecutor.execute("location.reload();");

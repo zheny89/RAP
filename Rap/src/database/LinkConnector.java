@@ -333,9 +333,22 @@ public class LinkConnector {
 		entityManager.getTransaction().commit();
 	}
 
+	/** 
+	 * @param id
+	 * @return объект сообщения, null если такого нет в базе
+	 */
 	private static Message getMessage(int id) {
 		Message msg = entityManager.find(Message.class, id);
 		return msg;
+	}
+	
+	/**
+	 * @param messagestatus статус сообщения (прочитано/нет)
+	 * @return количество сообщений с данным статусом
+	 */
+	public static int getMessagesCount(short messagestatus) {
+		Query q = entityManager.createQuery("SELECT COUNT(1) FROM Message m WHERE m.status = " + Short.toString(messagestatus));
+		return ((Long) q.getSingleResult()).intValue();
 	}
 
 }

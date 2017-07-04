@@ -24,7 +24,7 @@ public class MailView implements View {
 
 	BasicEntryPoint enterPoint;
 	Label dayLabel, senderLabel, messageLabel;
-	Font headerFont, normalBoldFont;
+	Font headerFont, standardBoldFont;
 	
 	public MailView(BasicEntryPoint enterPoint, Composite parent) {
 		this.enterPoint = enterPoint;
