@@ -35,7 +35,7 @@ public class LoginView implements View {
 	private String subtitleString = "";
 	private String loginString = "Логин";
 	private String pswdString = "Пароль";
-	private String buttonString = "Ок";
+	private String buttonString = "Войти";
 	
 	public LoginView(Composite parent, BasicEntryPoint enterPoint) {
 		this.enterPoint = enterPoint;
@@ -119,7 +119,7 @@ public class LoginView implements View {
 			subtitleString = "Неверный логин или пароль";
 			return false;
 		}
-		// ëîãèíèì ïî ldap
+		// логиним по ldap
 		LdapContext connection = null;
 		try {
 			connection = LdapAuthentication.getConnection(login, pswd);
@@ -128,7 +128,7 @@ public class LoginView implements View {
 			subtitleString = "Неверный логин или пароль";
 			return false;
 		}
-		// ïðîâåðÿåì, åñòü ëè â áàçå äàííûõ
+		// проверяем, есть ли работник в базе, если что заносим
 		Worker worker = LinkConnector.getWorker(login);
 		if (worker == null) {
 			LdapAuthentication.getUsersAttribute(login, connection);

@@ -34,7 +34,7 @@ public class MailView implements View {
 		paneComposite.setLayout(new GridLayout(2, false));
 		
 		Label headerLabel = new Label(paneComposite, SWT.CENTER);
-		headerLabel.setText("Сообщения");
+		headerLabel.setText("РЎРѕРѕР±С‰РµРЅРёСЏ");
 		FontData fontData = headerLabel.getFont().getFontData()[0];
 		headerFont = new Font(headerLabel.getFont().getDevice(), 
 				new FontData(fontData.getName(), fontData.getHeight(), SWT.BOLD));
@@ -65,7 +65,7 @@ public class MailView implements View {
 		Label footerSeparator = new Label(paneComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		footerSeparator.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		Button backButton = new Button(paneComposite, SWT.PUSH);
-		backButton.setText("Назад");
+		backButton.setText("РќР°Р·Р°Рґ");
 		backButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		backButton.addSelectionListener(new SelectionListener() {
 
@@ -80,9 +80,9 @@ public class MailView implements View {
 	}
 	
 	private void drawMailDetail(Composite mailDetailComposite, Message mail) {
-		dayLabel.setText("Дата отправления: " + mail.getDay().toString());
-		senderLabel.setText("Отправитель: " + mail.getSender().getName());
-		messageLabel.setText("Сообщение:\n" + mail.getMessage());
+		dayLabel.setText("Р”Р°С‚Р° РѕС‚РїСЂР°РІР»РµРЅРёСЏ: " + mail.getDay().toString());
+		senderLabel.setText("РћС‚РїСЂР°РІРёС‚РµР»СЊ: " + mail.getSender().getName());
+		messageLabel.setText("РЎРѕРѕР±С‰РµРЅРёРµ:\n" + mail.getMessage());
 		mailDetailComposite.setSize(mailDetailComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 	
