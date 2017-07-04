@@ -38,11 +38,11 @@ public class LinkConnector {
 	}
 
 	/**
-	 * Добавить работника в базу данных
-	 * @param login логин (совпадает с ldap)
-	 * @param name имя
-	 * @param isAdmin права администратора
-	 * @throws EntryAlreadyExistsException если работник с таким логином уже существует
+	 * РґРѕР±Р°РІРёС‚СЊ СЂР°Р±РѕС‚РЅРёРєР° РІ Р±Р°Р·Сѓ
+	 * @param login Р»РѕРіРёРЅ (СЃРѕРІРїР°РґР°РµС‚ СЃ ldap)
+	 * @param name РїРѕР»РЅРѕРµ РёРјСЏ
+	 * @param isAdmin РїСЂР°РІР° Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°
+	 * @throws EntryAlreadyExistsException РµСЃР»Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ СЃ С‚Р°РєРёРј Р»РѕРіРёРЅРѕРј СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚
 	 */
 	public static void addWorker(String login, String name, boolean isAdmin) throws EntryAlreadyExistsException {
 		Worker worker = getWorker(login);
@@ -58,8 +58,8 @@ public class LinkConnector {
 	}
 
 	/**
-	 * @param id работника в базе
-	 * @return данные работника, null если работника нет в базе
+	 * @param id СЂР°Р±РѕС‚РЅРёРєР° РІ Р±Р°Р·Рµ
+	 * @return РѕР±СЉРµРєС‚ СЂР°Р±РѕС‚РЅРёРєР°, null РµСЃР»Рё СЂР°Р±РѕС‚РЅРёРєР° РЅРµС‚ РІ Р±Р°Р·Рµ
 	 */
 	public static Worker getWorker(int id) {
 		Worker worker = entityManager.find(Worker.class, id);
@@ -68,8 +68,8 @@ public class LinkConnector {
 
 	/**
 	 * 
-	 * @param login работника в базе и ldap
-	 * @return данные работника, null если работника нет в базе
+	 * @param login СЂР°Р±РѕС‚РЅРёРєР° РІ ldap
+	 * @return РѕР±СЉРµРєС‚ СЂР°Р±РѕС‚РЅРёРєР°, null РµСЃР»Рё СЂР°Р±РѕС‚РЅРёРєР° РЅРµС‚ РІ Р±Р°Р·Рµ
 	 */
 	public static Worker getWorker(String login) {
 		Query q = entityManager.createQuery("SELECT w FROM Worker w WHERE w.login = \'" + login + "\'");
@@ -80,7 +80,15 @@ public class LinkConnector {
 		}
 	}
 	
-	private static void addWorktime(int workerId, LocalDate day, short hours, short flag) throws EntryNotExistsException {
+	/**
+	 * РґРѕР±Р°РІРёС‚СЊ РјРµС‚РєСѓ Рѕ СЏРІРєРµ СЂР°Р±РѕС‚РЅРёРєР° РІ Р·Р°РґР°РЅРЅС‹Р№ РґРµРЅСЊ
+	 * @param workerId id СЂР°Р±РѕС‚РЅРёРєР° РІ Р±Р°Р·Рµ
+	 * @param day РґР°С‚Р°
+	 * @param hours РєРѕР»РёС‡РµСЃС‚РІРѕ С‡Р°СЃРѕРІ
+	 * @param flag С„Р»Р°Рі
+	 * @throws EntryNotExistsException РµСЃР»Рё СЂР°Р±РѕС‚РЅРёРєР° РЅРµС‚ РІ Р±Р°Р·Рµ
+	 */
+	public static void addWorktime(int workerId, LocalDate day, short hours, short flag) throws EntryNotExistsException {
 		Worker worker = getWorker(workerId);
 		if (worker == null) throw new EntryNotExistsException("No worker found with id=" + workerId);
 		entityManager.getTransaction().begin();
@@ -94,20 +102,20 @@ public class LinkConnector {
 	}
 
 	/**
-	 * Отметить работника в расписании на текущий день
-	 * @param id работника
-	 * @throws EntryNotExistsException если работника нет в базе
+	 * РѕС‚РјРµС‚РёС‚СЊ СЏРІРєСѓ СЂР°Р±РѕС‚РЅРёРєР° РІ СЃРµРіРѕРґРЅСЏС€РЅРёР№ РґРµРЅСЊ
+	 * @param id СЂР°Р±РѕС‚РЅРёРєР° РІ Р±Р°Р·Рµ
+	 * @throws EntryNotExistsException РµСЃР»Рё СЂР°Р±РѕС‚РЅРёРєР° РЅРµС‚ РІ Р±Р°Р·Рµ
 	 */
 	public static void logWorkerIn(int id) throws EntryNotExistsException {
-		if (getWorktime(id, LocalDate.now()) == null) // ещё не отмечался сегодня
+		if (getWorktime(id, LocalDate.now()) == null) // РµС‰С‘ РЅРµ РѕС‚РјРµС‡Р°Р»СЃСЏ
 			addWorktime(id, LocalDate.now(), (short) 8, Worker.Flags.NONE);
 	}
 
 	/**
-	 * Добавить сообщение админу в базу
-	 * @param senderId id отправителя
-	 * @param text текст сообщения
-	 * @throws EntryNotExistsException если отправителя нет в базе
+	 * РґРѕР±Р°РІРёС‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂСѓ
+	 * @param senderId id РѕС‚РїСЂР°РІРёС‚РµР»СЏ
+	 * @param text С‚РµРєСЃС‚ СЃРѕРѕР±С‰РµРЅРёСЏ
+	 * @throws EntryNotExistsException РµСЃР»Рё РѕС‚РїСЂР°РІРёС‚РµР»СЏ РЅРµС‚ РІ Р±Р°Р·Рµ
 	 */
 	public static void addMessage(int senderId, String text) throws EntryNotExistsException {
 		Worker sender = getWorker(senderId);
@@ -124,8 +132,8 @@ public class LinkConnector {
 	
 	/**
 	 * 
-	 * @param id записи в расписании
-	 * @return
+	 * @param id РѕС‚РјРµС‚РєРё Рѕ СЏРІРєРµ
+	 * @return РѕР±СЉРµРєС‚ РѕС‚РјРµС‚РєРё Рѕ СЏРІРєРµ, null РµСЃР»Рё РѕС‚РјРµС‚РєРё РЅРµ Р±С‹Р»Рѕ
 	 */
 	public static Worktime getWorktime(WorktimeKey id) {
 		Worktime worktime = entityManager.find(Worktime.class, id);
@@ -133,10 +141,10 @@ public class LinkConnector {
 	}
 	
 	/**
-	 * @param workerId id работника
-	 * @param day дата
-	 * @return данные о работе пользователя в указанный день, null если работник не отмечался
-	 * @throws EntryNotExistsException если работника нет в базе
+	 * @param workerId id СЂР°Р±РѕС‚РЅРёРєР° РІ Р±Р°Р·Рµ
+	 * @param day РґР°С‚Р°
+	 * @return РѕС‚РјРµС‚РєР° Рѕ СЏРІРєРµ СЂР°Р±РѕС‚РЅРёРєР° РІ СѓРєР°Р·Р°РЅРЅС‹Р№ РґРµРЅСЊ, null РµСЃР»Рё РѕС‚РјРµС‚РєРё РЅРµ Р±С‹Р»Рѕ
+	 * @throws EntryNotExistsException РµСЃР»Рё СЂР°Р±РѕС‚РЅРёРєР° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚
 	 */
 	public static Worktime getWorktime(int workerId, LocalDate day) throws EntryNotExistsException {
 		Worker worker = getWorker(workerId);
@@ -147,31 +155,31 @@ public class LinkConnector {
 	}
 
 	/**
-	 * Изменить количество часов работы работника в конкретный день (даже если не отмечался)
-	 * @param workerId id работника
-	 * @param day дата
-	 * @param workHours новое время работы
-	 * @throws EntryNotExistsException 
+	 * СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ С‡Р°СЃРѕРІ, РѕС‚СЂР°Р±РѕС‚Р°РЅРЅС‹С… СЂР°Р±РѕС‚РЅРёРєРѕРј РІ РґР°РЅРЅС‹Р№ РґРµРЅСЊ (РґР°Р¶Рµ РµСЃР»Рё РѕС‚РјРµС‚РєРё РЅРµ Р±С‹Р»Рѕ)
+	 * @param workerId id СЂР°Р±РѕС‚РЅРёРєР°
+	 * @param day РґР°С‚Р°
+	 * @param workHours С‡Р°СЃС‹ СЂР°Р±РѕС‚С‹
+	 * @throws EntryNotExistsException РµСЃР»Рё СЂР°Р±РѕС‚РЅРёРєР° РЅРµС‚ РІ Р±Р°Р·Рµ
 	 */
 	public static void updateWorktimeHours(int workerId, LocalDate day, short workHours) throws EntryNotExistsException {
 		updateWorktimeHours(workerId, day, workHours, Worker.Flags.NONE);
 	}
 	
 	/**
-	 * Изменить количество часов работы и флаг работника в конкретный день (даже если не отмечался)
-	 * @param workerId id работника
-	 * @param day дата
-	 * @param workHours новое время работы
-	 * @param flag состояние на дату
-	 * @throws EntryNotExistsException 
+	 * СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ С‡Р°СЃРѕРІ, РѕС‚СЂР°Р±РѕС‚Р°РЅРЅС‹С… СЂР°Р±РѕС‚РЅРёРєРѕРј, Рё С„Р»Р°Рі РІ РґР°РЅРЅС‹Р№ РґРµРЅСЊ (РґР°Р¶Рµ РµСЃР»Рё РѕС‚РјРµС‚РєРё РЅРµ Р±С‹Р»Рѕ)
+	 * @param workerId id СЂР°Р±РѕС‚РЅРёРєР°
+	 * @param day РґР°С‚Р°
+	 * @param workHours С‡Р°СЃС‹ СЂР°Р±РѕС‚С‹
+	 * @param flag СЃРѕСЃС‚РѕСЏРЅРёРµ СЂР°Р±РѕС‚РЅРёРєР°
+	 * @throws EntryNotExistsException РµСЃР»Рё СЂР°Р±РѕС‚РЅРёРєР° РЅРµС‚ РІ Р±Р°Р·Рµ
 	 */
 	public static void updateWorktimeHours(int workerId, LocalDate day, short workHours, short flag) throws EntryNotExistsException {
 		Worker worker = getWorker(workerId);
 		if (worker == null) throw new EntryNotExistsException("No worker found with id=" + workerId);
 		Worktime worktime = getWorktime(workerId, day);
-		if (worktime == null) // не отмечался
+		if (worktime == null) // пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			addWorktime(workerId, day, workHours, Worker.Flags.NONE);
-		else { // отмечался
+		else { // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			entityManager.getTransaction().begin();
 			worktime.setHours(workHours);
 			worktime.setFlag(flag);
@@ -181,10 +189,10 @@ public class LinkConnector {
 	}
 
 	/**
-	 * Выставить состояние работнику (можно отложенно)
-	 * @param id работника
-	 * @param flag состояние
-	 * @param startDate дата начала действия флага, null если с сегодняшнего дня
+	 * РІС‹СЃС‚Р°РІРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ СЂР°Р±РѕС‚РЅРёРєСѓ (РјРѕР¶РЅРѕ РѕС‚Р»РѕР¶РµРЅРЅС‹Р№)
+	 * @param id СЂР°Р±РѕС‚РЅРёРєР°
+	 * @param flag СЃРѕСЃС‚РѕСЏРЅРёРµ
+	 * @param startDate РґР°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ С„Р»Р°РіР°, null РµСЃР»Рё СЃ СЃРµРіРѕРґРЅСЏС€РЅРµРіРѕ РґРЅСЏ
 	 */
 	public static void updateWorkerFlag(int id, short flag, LocalDate startDate) {
 		Worker worker = getWorker(id);
@@ -197,15 +205,15 @@ public class LinkConnector {
 	}
 
 	/** 
-	 * Сбросить состояние работника
-	 * @param id работника
+	 * СЃР±СЂРѕСЃРёС‚СЊ С„Р»Р°Рі СЂР°Р±РѕС‚РЅРёРєР°
+	 * @param id СЂР°Р±РѕС‚РЅРёРєР°
 	 */
 	public static void clearWorkerFlag(int id) {
 		updateWorkerFlag(id, Worker.Flags.NONE, null);
 	}
 
 	/**
-	 * @return список работников
+	 * @return СЃРїРёСЃРѕРє РІСЃРµС… СЂР°Р±РѕС‚РЅРёРєРѕРІ РІ Р±Р°Р·Рµ
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Worker> getWorkers() {
@@ -214,7 +222,7 @@ public class LinkConnector {
 	}
 	
 	/**
-	 * @return количество работников в списке
+	 * @return РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚РЅРёРєРѕРІ РІ Р±Р°Р·Рµ
 	 */
 	public static int getWorkersCount() {
 		Query q = entityManager.createQuery("SELECT COUNT(1) FROM Worker w");
@@ -222,7 +230,7 @@ public class LinkConnector {
 	}
 	
 	/**
-	 * @return список работников
+	 * @return СЃРїРёСЃРѕРє РІСЃРµС… СЂР°Р±РѕС‚РЅРёРєРѕРІ РІ Р±Р°Р·Рµ, СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Р№ РїРѕ РёРјРµРЅР°Рј
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Worker> getWorkersSortedByName() {
@@ -231,7 +239,7 @@ public class LinkConnector {
 	}
 	
 	/**
-	 * @return список отметок посещений
+	 * @return СЃРїРёСЃРѕРє РІСЃРµС… РјРµС‚РѕРє Рѕ СЏРІРєР°С…
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Worktime> getWorktimes() {
@@ -240,7 +248,7 @@ public class LinkConnector {
 	}
 	
 	/**
-	 * @return список отметок посещений за период, сортированный по дате
+	 * @return СЃРїРёСЃРѕРє РІСЃРµС… РјРµС‚РѕРє Рѕ СЏРІРєР°С… РІ СѓРєР°Р·Р°РЅРЅС‹Р№ РїРµСЂРёРѕРґ, СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Р№ РїРѕ РґР°С‚Рµ
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Worktime> getWorktimes(LocalDate from, LocalDate to) {
@@ -250,7 +258,7 @@ public class LinkConnector {
 	}
 	
 	/**
-	 * @return список отметок посещений работника за период, сортированный по дате
+	 * @return СЃРїРёСЃРѕРє РІСЃРµС… РјРµС‚РѕРє Рѕ СЏРІРєР°С… СѓРєР°Р·Р°РЅРЅРѕРіРѕ СЂР°Р±РѕС‚РЅРёРєР° РІ СѓРєР°Р·Р°РЅРЅС‹Р№ РїРµСЂРёРѕРґ
 	 */
 	public static List<Worktime> getWorktimes(int workerId, LocalDate from, LocalDate to) {
 		List<Worktime> wts = getWorktimes(from, to);
@@ -262,8 +270,8 @@ public class LinkConnector {
 	}
 	
 	/**
-	 * @param messageStatus признак прочитано/непрочитано
-	 * @return список сообщений по признаку
+	 * @param messageStatus СЃРѕСЃС‚РѕСЏРЅРёРµ СЃРѕРѕР±С‰РµРЅРёСЏ (РїСЂРѕС‡РёС‚Р°РЅРѕ/РЅРµС‚)
+	 * @return СЃРїРёСЃРѕРє РІСЃРµС… СЃРѕРѕР±С‰РµРЅРёР№ СЃ Р·Р°РґР°РЅРЅС‹Рј СЃРѕСЃС‚РѕСЏРЅРёРµРј
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Message> getMessages(short messageStatus) {
@@ -272,9 +280,19 @@ public class LinkConnector {
 	}
 	
 	/**
-	 * @param from с даты
-	 * @param to по дату
-	 * @return все отметки о посещениях в указанный период, сортированные по дате и соотнесённые с работниками
+	 * @param messageStatus СЃРѕСЃС‚РѕСЏРЅРёРµ СЃРѕРѕР±С‰РµРЅРёСЏ (РїСЂРѕС‡РёС‚Р°РЅРѕ/РЅРµС‚)
+	 * @return СЃРїРёСЃРѕРє РІСЃРµС… СЃРѕРѕР±С‰РµРЅРёР№ СЃ Р·Р°РґР°РЅРЅС‹Рј СЃРѕСЃС‚РѕСЏРЅРёРµРј
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<Message> getMessagesSortedByDay(short messageStatus) {
+		Query q = entityManager.createQuery("SELECT m FROM Message m WHERE m.status = " + Short.toString(messageStatus) + " ORDER BY m.day");
+		return q.getResultList();
+	}
+	
+	/**
+	 * @param from РЅР°С‡Р°Р»Рѕ РїРµСЂРёРѕРґР°
+	 * @param to РєРѕРЅРµС† РїРµСЂРёРѕРґР°
+	 * @return РєР°СЂС‚Р°, РіРґРµ СЂР°Р±РѕС‚РЅРёРєСѓ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ РјР°СЃСЃРёРІ РѕС‚РјРµС‚РѕРє Рѕ РµРіРѕ СЏРІРєР°С…
 	 */
 	public static WorkerToWorktimesTable getWorkerToWorktimes(LocalDate from, LocalDate to) {
 		List<Worker> workers = getWorkers();
@@ -290,7 +308,7 @@ public class LinkConnector {
 	}
 	
 	/**
-	 * 
+	 * Р’С‹СЃС‚Р°РІРёС‚СЊ СЂР°Р±РѕС‚РЅРёРєСѓ РїСЂР°РІР° Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°
 	 * @param workerId
 	 * @param isAdmin
 	 */
@@ -303,7 +321,7 @@ public class LinkConnector {
 	}
 	
 	/**
-	 * отмечает сообщение как прочитанное / не прочитанное
+	 * РёР·РјРµРЅРёС‚СЊ СЃС‚Р°С‚СѓСЃ СЃРѕРѕР±С‰РµРЅРёСЏ РЅР° РїСЂРѕС‡РёС‚Р°РЅРѕ/РЅРµ РїСЂРѕС‡РёС‚Р°РЅРѕ
 	 * @param msgId
 	 * @param status
 	 */
