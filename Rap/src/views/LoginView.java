@@ -31,11 +31,11 @@ public class LoginView implements View {
 	private Text loginText,pswdText;
 	private Composite loginComposite;
 	private BasicEntryPoint enterPoint;
-	private String titleString = "Вход в систему";
+	private String titleString = "Г‚ГµГ®Г¤ Гў Г±ГЁГ±ГІГҐГ¬Гі";
 	private String subtitleString = "";
-	private String loginString = "Логин";
-	private String pswdString = "Пароль";
-	private String buttonString = "Войти";
+	private String loginString = "Г‹Г®ГЈГЁГ­";
+	private String pswdString = "ГЏГ Г°Г®Г«Гј";
+	private String buttonString = "Г‚Г®Г©ГІГЁ";
 	
 	public LoginView(Composite parent, BasicEntryPoint enterPoint) {
 		this.enterPoint = enterPoint;
@@ -116,20 +116,19 @@ public class LoginView implements View {
 	
 	private boolean authenticateWorker(String login, String pswd) {
 		if (login == null || pswd == null || login.isEmpty() || pswd.isEmpty()) {
-			subtitleString = "Неверный логин или пароль";
+			subtitleString = "ГЌГҐГўГҐГ°Г­Г»Г© Г«Г®ГЈГЁГ­ ГЁГ«ГЁ ГЇГ Г°Г®Г«Гј";
 			return false;
 		}
-		// логиним по ldap
+		// Г«Г®ГЈГЁГ­ГЁГ¬ ГЇГ® ldap
 		LdapContext connection = null;
 		try {
 			connection = LdapAuthentication.getConnection(login, pswd);
 		} catch (NamingException e) {
 			e.printStackTrace();
-			subtitleString = "Неверный логин или пароль";
+			subtitleString = "ГЌГҐГўГҐГ°Г­Г»Г© Г«Г®ГЈГЁГ­ ГЁГ«ГЁ ГЇГ Г°Г®Г«Гј";
 			return false;
 		}
-		// проверяем, есть ли в базе данных
-		LinkConnector.connect();
+		// ГЇГ°Г®ГўГҐГ°ГїГҐГ¬, ГҐГ±ГІГј Г«ГЁ Гў ГЎГ Г§ГҐ Г¤Г Г­Г­Г»Гµ
 		Worker worker = LinkConnector.getWorker(login);
 		if (worker == null) {
 			LdapAuthentication.getUsersAttribute(login, connection);
@@ -144,9 +143,9 @@ public class LoginView implements View {
 				LinkConnector.close();
 				return false;
 			}
-			
+
 		}
-		// отмечаем пользователя
+		// Г®ГІГ¬ГҐГ·Г ГҐГ¬ ГЇГ®Г«ГјГ§Г®ГўГ ГІГҐГ«Гї
 		try {
 			LinkConnector.logWorkerIn(worker.getId());
 		} catch (EntryNotExistsException e1) {
@@ -154,7 +153,7 @@ public class LoginView implements View {
 			subtitleString = "Unknown error";
 			return false;
 		}
-		// перестраиваем форму
+		// ГЇГҐГ°ГҐГ±ГІГ°Г ГЁГўГ ГҐГ¬ ГґГ®Г°Г¬Гі
 		try {
 			RWT.getSettingStore().setAttribute("userID", String.valueOf(worker.getId()));
 			if (worker.isAdmin())

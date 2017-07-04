@@ -7,6 +7,7 @@ public interface View {
 		static final int CLIENT_VIEW = 1;
 		static final int ADMIN_VIEW = 2;
 		static final int REPORT_VIEW = 3;
+		static final int MAIL_VIEW = 4;
 	}
 	
 	void dispose();

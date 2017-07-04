@@ -16,10 +16,31 @@ public class Worker {
 	
 	public static interface Flags {
 		static final short NONE = (short) 0;
-		static final short TIME_OFF = (short) 1; // Отгул
-		static final short SICK_LEAVE = (short) 2; // Больничный
-		static final short VACATION = (short) 3;  // Отпуск
-		static final short FIRED = (short) 4; // Уволен
+
+		static final short TIME_OFF = (short) 1;
+		static final short SICK_LEAVE = (short) 2;
+		static final short VACATION = (short) 3;
+		static final short FIRED = (short) 4;
+		
+		static String toString(short flag) {
+			switch(flag) {
+			case TIME_OFF : return "ГЋГІГЈГіГ«";
+			case SICK_LEAVE: return "ГЃГ®Г«ГјГ­ГЁГ·Г­Г»Г©";
+			case VACATION: return "ГЋГІГЇГіГ±ГЄ";
+			case FIRED: return "Г“ГўГ®Г«ГҐГ­";
+			default: return "";
+			}
+		}
+		
+		static String toSmallString(short flag) {
+			switch(flag) {
+			case TIME_OFF : return "ГЋГ’Гѓ";
+			case SICK_LEAVE: return "ГЃ";
+			case VACATION: return "ГЋГ’";
+			case FIRED: return "--";
+			default: return "?";
+			}
+		}
 	}
 	
 	@Id

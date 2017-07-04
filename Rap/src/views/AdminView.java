@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.scripting.ClientListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlEvent;
@@ -25,13 +26,17 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -39,11 +44,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import database.LinkConnector;
+import database.Message;
 import database.Worker;
 import database.Worktime;
 import exception.EntryNotExistsException;
+import rap.BasicEntryPoint;
 
 public class AdminView implements View {
+	BasicEntryPoint enterPoint;
 	private Composite adminComposite, upperComposite, lowerComposite, lowerHeaderComposite, listComposite;
 	private ScrolledComposite listHolderComposite;
 	private Button reportsButton,changeBaseButton,messageButton;
@@ -53,7 +61,8 @@ public class AdminView implements View {
 	private Map<Worker, Composite> userList = new HashMap<Worker, Composite>();
 	private Set<Worker> workerList;
 	
-	public AdminView(Composite parent) {
+	public AdminView(BasicEntryPoint enterPoint, Composite parent) {
+		this.enterPoint = enterPoint;
 		greenIconData = new ImageData(AdminView.class.getResourceAsStream("green.png"));
 		greyIconData = new ImageData(AdminView.class.getResourceAsStream("grey.png"));
 		
@@ -66,17 +75,29 @@ public class AdminView implements View {
 		upperComposite.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		reportsButton = new Button(upperComposite, SWT.PUSH);
-		reportsButton.setText("Отчеты");
+		reportsButton.setText("ГЋГІГ·ГҐГІГ»");
 		reportsButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		reportsButton.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				new ReportDialog(parent.getShell()).open();
+				//enterPoint.changeView(View.Id.REPORT_VIEW);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {/*not called*/}
+			
+		});
 		
 		changeBaseButton = new Button(upperComposite, SWT.PUSH);
-		changeBaseButton.setText("Настройка аттрибутов");
+		changeBaseButton.setText("ГЌГ Г±ГІГ°Г®Г©ГЄГ  Г ГІГІГ°ГЁГЎГіГІГ®Гў");
 		changeBaseButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		changeBaseButton.addListener(SWT.MouseUp, new Listener() {
 			
 			@Override
 			public void handleEvent(Event event) {
-				//Окно редактирования
+				//ГЋГЄГ­Г® Г°ГҐГ¤Г ГЄГІГЁГ°Г®ГўГ Г­ГЁГї
 				Shell shell = getChangeShell(parent);
 				shell.setVisible(true);
 				
@@ -86,6 +107,17 @@ public class AdminView implements View {
 		messageButton = new Button(upperComposite, SWT.PUSH);
 		messageButton.setText("10");
 		messageButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		messageButton.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				enterPoint.changeView(View.Id.MAIL_VIEW);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {/* never called */}
+			
+		});
 		
 		lowerComposite = new Composite(adminComposite, SWT.NONE);
 		lowerComposite.setLayout(new GridLayout(1, false));
@@ -97,16 +129,16 @@ public class AdminView implements View {
 		lowerHeaderLayout.marginLeft = lowerHeaderLayout.marginRight = 0;
 		lowerHeaderComposite.setLayout(lowerHeaderLayout);
 		Label currentDateLabel = new Label(lowerHeaderComposite, SWT.NONE);
-		currentDateLabel.setText("Текущая дата: " + LocalDate.now().toString());
+		currentDateLabel.setText("Г’ГҐГЄГіГ№Г Гї Г¤Г ГІГ : " + LocalDate.now().toString());
 		Text searchField = new Text(lowerHeaderComposite, SWT.BORDER | SWT.SEARCH);
-		searchField.setText("поиск...");
+		searchField.setText("ГЇГ®ГЁГ±ГЄ...");
 		searchField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
 		searchField.addListener(SWT.FocusIn, new Listener()
 	    {
 	        @Override
 	        public void handleEvent(Event e)
 	        {
-	            if (searchField.getText().equals("поиск...")) searchField.setText("");
+	            if (searchField.getText().equals("ГЇГ®ГЁГ±ГЄ...")) searchField.setText("");
 	        }
 	    });
 		searchField.addModifyListener(new ModifyListener() {
@@ -136,7 +168,6 @@ public class AdminView implements View {
 		listComposite.setSize(listComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		
 		adminComposite.addDisposeListener(new DisposeListener() {
-			
 			@Override
 			public void widgetDisposed(DisposeEvent event) {
 				//iconData.			
@@ -148,7 +179,7 @@ public class AdminView implements View {
 		int width = 400;
 		int height = 300;
 		Shell shell = new Shell(parent.getShell(), SWT.DIALOG_TRIM);
-		shell.setText("Настройка флагов");
+		shell.setText("ГЌГ Г±ГІГ°Г®Г©ГЄГ  ГґГ«Г ГЈГ®Гў");
 		shell.setBounds(parent.getBounds().width/2-width/2,parent.getBounds().height/2-height/2,width,height);
 		shell.setLayout(new GridLayout(2,false));
 		
@@ -162,27 +193,27 @@ public class AdminView implements View {
 		composite.setLayout(new GridLayout(1,true));
 		
 		Button noneButton = new Button(composite,SWT.RADIO);
-		noneButton.setText("Работает");
+		noneButton.setText("ГђГ ГЎГ®ГІГ ГҐГІ");
 		noneButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		Button timeOffButton = new Button(composite,SWT.RADIO);
-		timeOffButton.setText("В отгуле");
+		timeOffButton.setText("Г‚ Г®ГІГЈГіГ«ГҐ");
 		timeOffButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		Button stick_leaveButton = new Button(composite,SWT.RADIO);
-		stick_leaveButton.setText("На больничном");
+		stick_leaveButton.setText("ГЌГ  ГЎГ®Г«ГјГ­ГЁГ·Г­Г®Г¬");
 		stick_leaveButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		Button vocationButton = new Button(composite,SWT.RADIO);
-		vocationButton.setText("В отпуске");
+		vocationButton.setText("Г‚ Г®ГІГЇГіГ±ГЄГҐ");
 		vocationButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		Button firedButton = new Button(composite,SWT.RADIO);
-		firedButton.setText("Уволен");
+		firedButton.setText("Г“ГўГ®Г«ГҐГ­");
 		firedButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		Button okButton = new Button(shell,SWT.PUSH);
-		okButton.setText("Подтверждение");
+		okButton.setText("ГЏГ®Г¤ГІГўГҐГ°Г¦Г¤ГҐГ­ГЁГҐ");
 		okButton.setLayoutData(new GridData(SWT.RIGHT,SWT.BOTTOM,true,true));
 		okButton.addListener(SWT.MouseUp, new Listener() {
 			
@@ -254,7 +285,6 @@ public class AdminView implements View {
 	private void fillUsersList() {
 		String currentDateString = RWT.getSettingStore().getAttribute("validDate");
 		LocalDate currentDate = LocalDate.parse(currentDateString);
-		LinkConnector.connect();
 		List<Worker> workers = LinkConnector.getWorkersSortedByName();
 		for(Worker worker : workers) {
 			Composite compos = new Composite(listComposite, SWT.NONE);
@@ -276,11 +306,12 @@ public class AdminView implements View {
 			button.setText(worker.getName());
 			userList.put(worker, compos);
 		}
-		LinkConnector.close();
 	}
 	
 	@Override
 	public void dispose() {
 		adminComposite.dispose();		
 	}
+	
+	
 }
