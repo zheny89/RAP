@@ -34,8 +34,8 @@ public class LoginView implements View {
 	private String titleString = "Вход в систему";
 	private String subtitleString = "";
 	private String loginString = "Логин";
-	private String pswdString = "Ïàðîëü";
-	private String buttonString = "Âîéòè";
+	private String pswdString = "Пароль";
+	private String buttonString = "Ок";
 	
 	public LoginView(Composite parent, BasicEntryPoint enterPoint) {
 		this.enterPoint = enterPoint;
@@ -116,7 +116,7 @@ public class LoginView implements View {
 	
 	private boolean authenticateWorker(String login, String pswd) {
 		if (login == null || pswd == null || login.isEmpty() || pswd.isEmpty()) {
-			subtitleString = "Íåâåðíûé ëîãèí èëè ïàðîëü";
+			subtitleString = "Неверный логин или пароль";
 			return false;
 		}
 		// ëîãèíèì ïî ldap
@@ -125,7 +125,7 @@ public class LoginView implements View {
 			connection = LdapAuthentication.getConnection(login, pswd);
 		} catch (NamingException e) {
 			e.printStackTrace();
-			subtitleString = "Íåâåðíûé ëîãèí èëè ïàðîëü";
+			subtitleString = "Неверный логин или пароль";
 			return false;
 		}
 		// ïðîâåðÿåì, åñòü ëè â áàçå äàííûõ
@@ -145,7 +145,6 @@ public class LoginView implements View {
 			}
 
 		}
-		// îòìå÷àåì ïîëüçîâàòåëÿ
 		try {
 			LinkConnector.logWorkerIn(worker.getId());
 		} catch (EntryNotExistsException e1) {
@@ -153,7 +152,6 @@ public class LoginView implements View {
 			subtitleString = "Unknown error";
 			return false;
 		}
-		// ïåðåñòðàèâàåì ôîðìó
 		try {
 			RWT.getSettingStore().setAttribute("userID", String.valueOf(worker.getId()));
 			if (worker.isAdmin())

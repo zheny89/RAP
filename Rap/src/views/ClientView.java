@@ -30,16 +30,15 @@ public class ClientView implements View {
 		clientComposite.setLayout(new GridLayout(1,true));
 		
 		statusLabel = new Label(clientComposite,SWT.NONE);
-		statusLabel.setText("Вы были отмечены на рабочем месте\nВременная метка: " + RWT.getSettingStore().getAttribute("validDate"));
+		statusLabel.setText("Р”РѕР±СЂРѕРµ СѓС‚СЂРѕ =)\nР’С‹ Р±С‹Р»Рё РѕС‚РјРµС‡РµРЅС‹ РІ СЃРёСЃС‚РµРјРµ\nР’СЂРµРјРµРЅРЅР°СЏ РјРµС‚РєР°: " + RWT.getSettingStore().getAttribute("validDate"));
 		
 		sendRequestButton = new Button(clientComposite, SWT.PUSH);
 		sendRequestButton.setLayoutData(new GridData(SWT.CENTER,SWT.CENTER,true,true));
-		sendRequestButton.setText("Отправить запрос");
+		sendRequestButton.setText("РћС‚РїСЂР°РІРёС‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ");
 		sendRequestButton.addListener(SWT.MouseUp, new Listener() {
 			
 			@Override
 			public void handleEvent(Event event) {
-				// Отправка запроса
 				Shell requestShell = getRequestShell(parent.getShell());
 				requestShell.setVisible(true);
 			}
@@ -47,13 +46,12 @@ public class ClientView implements View {
 		
 		sendVocation = new Button(clientComposite, SWT.PUSH);
 		sendVocation.setLayoutData(new GridData(SWT.CENTER,SWT.CENTER,true,true));
-		sendVocation.setText("Попросить отпуск");
+		sendVocation.setText("РџРѕРїСЂРѕСЃРёС‚СЊ РѕС‚РїСѓСЃРє");
 		sendVocation.addListener(SWT.MouseUp, new Listener() {
 			
 			@Override
 			public void handleEvent(Event event) {
-				// Отправка запроса
-				String message = "Хочу отпуск";
+				String message = "РҐРѕС‡Сѓ РІ РѕС‚РїСѓСЃРє";
 				try {
 					LinkConnector.addMessage(userID, message);
 				} catch (EntryNotExistsException e) {
@@ -76,7 +74,7 @@ public class ClientView implements View {
 			Text requestText;
 			Button sendButton;
 			Shell shell = new Shell(parent);
-			shell.setText("Ваш запрос");
+			shell.setText("РЎРѕРѕР±С‰РµРЅРёРµ");
 			shell.setBounds(parent.getBounds().width/2-width/2,parent.getBounds().height/2-height/2,width,height);
 			shell.setLayout(new GridLayout(1,false));
 			
@@ -89,7 +87,7 @@ public class ClientView implements View {
 			composite.setLayout(new GridLayout(1,true));
 			
 			sendButton = new Button(composite, SWT.PUSH);
-			sendButton.setText("Отправить");
+			sendButton.setText("РћС‚РїСЂР°РІРёС‚СЊ");
 			sendButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 			sendButton.addListener(SWT.MouseUp, new Listener() {
 				
@@ -99,7 +97,6 @@ public class ClientView implements View {
 					try {
 						LinkConnector.addMessage(userID, message);
 					} catch (EntryNotExistsException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

@@ -179,7 +179,7 @@ public class AdminView implements View {
 		int width = 400;
 		int height = 300;
 		Shell shell = new Shell(parent.getShell(), SWT.DIALOG_TRIM);
-		shell.setText("Íàñòðîéêà ôëàãîâ");
+		shell.setText("Изменение аттрибутов");
 		shell.setBounds(parent.getBounds().width/2-width/2,parent.getBounds().height/2-height/2,width,height);
 		shell.setLayout(new GridLayout(2,false));
 		
@@ -193,27 +193,27 @@ public class AdminView implements View {
 		composite.setLayout(new GridLayout(1,true));
 		
 		Button noneButton = new Button(composite,SWT.RADIO);
-		noneButton.setText("Ðàáîòàåò");
+		noneButton.setText("Работает");
 		noneButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		Button timeOffButton = new Button(composite,SWT.RADIO);
-		timeOffButton.setText("Â îòãóëå");
+		timeOffButton.setText("В отгуле");
 		timeOffButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		Button stick_leaveButton = new Button(composite,SWT.RADIO);
-		stick_leaveButton.setText("Íà áîëüíè÷íîì");
+		stick_leaveButton.setText("На больничном");
 		stick_leaveButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		Button vocationButton = new Button(composite,SWT.RADIO);
-		vocationButton.setText("Â îòïóñêå");
+		vocationButton.setText("В отпуске");
 		vocationButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		Button firedButton = new Button(composite,SWT.RADIO);
-		firedButton.setText("Óâîëåí");
+		firedButton.setText("Уволен");
 		firedButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		Button okButton = new Button(shell,SWT.PUSH);
-		okButton.setText("Ïîäòâåðæäåíèå");
+		okButton.setText("Применить");
 		okButton.setLayoutData(new GridData(SWT.RIGHT,SWT.BOTTOM,true,true));
 		okButton.addListener(SWT.MouseUp, new Listener() {
 			
@@ -269,13 +269,8 @@ public class AdminView implements View {
 		return shell;
 	}
 	
-	private void selectRadioButton(int index){
-		
-	}
-	
 	private void fillComboBox(Combo combo){
 		workerList = userList.keySet();
-		String[] names = {"JON","JANE","PETRO0","SIDRO","GERASIM","JIN"};
 		for(Iterator<Worker> iterator = workerList.iterator();iterator.hasNext();){
 			Worker worker = iterator.next();
 			combo.add(worker.getName());
