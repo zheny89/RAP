@@ -218,7 +218,7 @@ public class LinkConnector {
 	 */
 	public static int getWorkersCount() {
 		Query q = entityManager.createQuery("SELECT COUNT(1) FROM Worker w");
-		return (Integer) q.getSingleResult();
+		return ((Long) q.getSingleResult()).intValue();
 	}
 	
 	/**

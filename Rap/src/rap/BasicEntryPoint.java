@@ -35,11 +35,13 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     private void setView(int viewID) {
         switch (currentViewID) {
 		case View.Id.LOGIN_VIEW: viewLogin(); break;
+
 		case View.Id.CLIENT_VIEW: viewClientPanel(); break;
 		case View.Id.ADMIN_VIEW: viewAdminPanel(); break;
 		case View.Id.REPORT_VIEW: viewReportPanel(); break;
 		case View.Id.MAIL_VIEW: viewMailPanel(); break;
-		default: throw new RuntimeException("Неизвестное значение: " + currentViewID);
+		default: throw new RuntimeException("ГЌГҐГЁГ§ГўГҐГ±ГІГ­Г®ГҐ Г§Г­Г Г·ГҐГ­ГЁГҐ: " + currentViewID);
+
 		}
     }
     
@@ -83,7 +85,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     			store.setAttribute("currentView", String.valueOf(viewID));
     			store.setAttribute("validDate", getCurrentDate());
     		} catch (IOException e) {
-    			System.err.println("Не смог сохранить данные. Идентификация невозможна.");
+    			System.err.println("ГЌГҐ Г±Г¬Г®ГЈ Г±Г®ГµГ°Г Г­ГЁГІГј Г¤Г Г­Г­Г»ГҐ. Г€Г¤ГҐГ­ГІГЁГґГЁГЄГ Г¶ГЁГї Г­ГҐГўГ®Г§Г¬Г®Г¦Г­Г .");
     		}
     	JavaScriptExecutor jsExecutor = RWT.getClient().getService(JavaScriptExecutor.class);
     	jsExecutor.execute("location.reload();");
