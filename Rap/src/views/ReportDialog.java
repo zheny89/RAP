@@ -107,7 +107,9 @@ public class ReportDialog extends Shell {
 		
 		Point size = this.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		this.setSize(size.x, size.y);
-		//this.setSize(400, 400);
-		//this.setLocation(parent.getB);
+		Point center = new Point(parent.getBounds().width / 2, parent.getBounds().height / 2);
+		center.x -= this.getSize().x / 2;
+		center.y -= this.getSize().y / 2;
+		this.setLocation(center);
 	}
 }
