@@ -14,6 +14,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import autoflagschanger.FlagsChanger;
 import database.LinkConnector;
 import database.Message;
 import database.Worker;
@@ -27,8 +28,7 @@ public class BasicApplication implements ApplicationConfiguration {
 	public void configure(Application application) {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(WebClient.PAGE_TITLE, "Система");
-        application.addEntryPoint("/home", BasicEntryPoint.class, properties);
-       
+        application.addEntryPoint("/home", BasicEntryPoint.class, properties); 
         
         new Thread(new Runnable() {
 			@Override
