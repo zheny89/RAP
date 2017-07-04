@@ -33,7 +33,7 @@ public class LoginView implements View {
 	private BasicEntryPoint enterPoint;
 	private String titleString = "Вход в систему";
 	private String subtitleString = "";
-	private String loginString = "Ëîãèí";
+	private String loginString = "Логин";
 	private String pswdString = "Ïàðîëü";
 	private String buttonString = "Âîéòè";
 	
