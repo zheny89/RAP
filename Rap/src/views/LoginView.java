@@ -161,7 +161,6 @@ public class LoginView implements View {
 			subtitleString = "ID storing error";
 			return false;
 		}
-		LinkConnector.close();
 		LdapAuthentication.closeLdapConnection();
 		return true;
 	}
