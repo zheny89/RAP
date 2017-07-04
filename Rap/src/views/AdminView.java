@@ -184,6 +184,28 @@ public class AdminView implements View {
 		Button okButton = new Button(shell,SWT.PUSH);
 		okButton.setText("Îê");
 		okButton.setLayoutData(new GridData(SWT.RIGHT,SWT.BOTTOM,true,true));
+		okButton.addListener(SWT.MouseUp, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				int index = comboBox.getSelectionIndex();
+				if(index == -1) return;
+				for(int i=0; i< index;i++)
+					workerList.iterator().next();
+				Worker worker = workerList.iterator().next();
+				
+				if(noneButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.NONE,null);
+				else
+					if(firedButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.FIRED,null);
+				else
+					if(stick_leaveButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.SICK_LEAVE,null);
+				else
+					if(timeOffButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.TIME_OFF,null);
+				else
+					if(vocationButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.VACATION,null);
+				
+			}
+		});
 		
 		comboBox.addSelectionListener(new SelectionListener() {
 			
@@ -193,11 +215,17 @@ public class AdminView implements View {
 				for(int i=0; i< index;i++)
 					workerList.iterator().next();
 				Worker worker = workerList.iterator().next();
-				System.out.println(worker.toString());
+				
+				noneButton.setSelection(false);
+				firedButton.setSelection(false);
+				stick_leaveButton.setSelection(false);
+				timeOffButton.setSelection(false);
+				vocationButton.setSelection(false);
+				
 				if(worker.getFlag() == Worker.Flags.NONE)
-					noneButton.forceFocus();
+					noneButton.setSelection(true);
 				else if(worker.getFlag() == Worker.Flags.FIRED)
-					firedButton.forceFocus();
+					firedButton.setSelection(true);
 				else if(worker.getFlag() == Worker.Flags.SICK_LEAVE)
 					stick_leaveButton.setSelection(true);
 				else if(worker.getFlag() == Worker.Flags.TIME_OFF)
@@ -213,6 +241,7 @@ public class AdminView implements View {
 		
 		return shell;
 	}
+	
 	
 	private void fillComboBox(Combo combo){
 		workerList = userList.keySet();
