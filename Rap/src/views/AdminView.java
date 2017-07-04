@@ -182,28 +182,14 @@ public class AdminView implements View {
 		firedButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
 		
 		Button okButton = new Button(shell,SWT.PUSH);
-		okButton.setText("Ок");
+		okButton.setText("Подтверждение");
 		okButton.setLayoutData(new GridData(SWT.RIGHT,SWT.BOTTOM,true,true));
 		okButton.addListener(SWT.MouseUp, new Listener() {
 			
 			@Override
 			public void handleEvent(Event event) {
-				int index = comboBox.getSelectionIndex();
-				if(index == -1) return;
-				for(int i=0; i< index;i++)
-					workerList.iterator().next();
-				Worker worker = workerList.iterator().next();
-				
-				if(noneButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.NONE,null);
-				else
-					if(firedButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.FIRED,null);
-				else
-					if(stick_leaveButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.SICK_LEAVE,null);
-				else
-					if(timeOffButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.TIME_OFF,null);
-				else
-					if(vocationButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.VACATION,null);
-				
+				shell.close();
+				shell.dispose();
 			}
 		});
 		
@@ -232,6 +218,16 @@ public class AdminView implements View {
 					timeOffButton.setSelection(true);
 				else if(worker.getFlag() == Worker.Flags.VACATION)
 					vocationButton.setSelection(true);
+				
+				if(noneButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.NONE,null);
+				else
+					if(firedButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.FIRED,null);
+				else
+					if(stick_leaveButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.SICK_LEAVE,null);
+				else
+					if(timeOffButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.TIME_OFF,null);
+				else
+					if(vocationButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.VACATION,null);
 			}
 			
 			@Override
@@ -242,6 +238,9 @@ public class AdminView implements View {
 		return shell;
 	}
 	
+	private void selectRadioButton(int index){
+		
+	}
 	
 	private void fillComboBox(Combo combo){
 		workerList = userList.keySet();
