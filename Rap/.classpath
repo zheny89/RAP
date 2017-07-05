@@ -25,5 +25,6 @@
 	<classpathentry kind="lib" path="lib/derbyoptionaltools.jar"/>
 	<classpathentry kind="lib" path="lib/derbyrun.jar"/>
 	<classpathentry kind="lib" path="lib/derbytools.jar"/>
+	<classpathentry kind="lib" path="C:/Users/EKiselev/Desktop/SkypeBotAPI.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
