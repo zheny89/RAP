@@ -7,10 +7,7 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.client.service.JavaScriptExecutor;
 import org.eclipse.rap.rwt.service.SettingStore;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.Shell;
 
 import views.AdminView;
 import views.ClientView;
@@ -72,7 +69,8 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     private void viewReportPanel(){
     	LocalDate fromDay = LocalDate.parse(store.getAttribute("reportStart"));
     	LocalDate toDay = LocalDate.parse(store.getAttribute("reportEnd"));
-    	currentView = new ReportView(this, parent, fromDay, toDay);
+    	boolean editMode = Boolean.parseBoolean(store.getAttribute("reportEditMode"));
+    	currentView = new ReportView(this, parent, fromDay, toDay, editMode);
     }
     
     private void viewMailPanel(){
@@ -108,5 +106,13 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     public static int getUserID(){
     	return Integer.valueOf(RWT.getSettingStore().getAttribute("userID"));
     }
+
+	public void storeEditMode(boolean editMode) {
+		try {
+			store.setAttribute("reportEditMode", Boolean.toString(editMode));
+		} catch (IOException e) {
+			System.err.println("Не удалось сохранить настройки режима редактирования.");
+		}	
+	}
 
 }

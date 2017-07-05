@@ -88,17 +88,23 @@ public class ReportDialog extends Shell {
 		periodStartCalendar.setEnabled(false);
 		periodEndCalendar.setEnabled(false);
 		
+		Button editCheck = new Button(pane, SWT.CHECK);
+		editCheck.setText("с возможностью редактирования");
+		editCheck.setSelection(false);
+		
 		Button okButton = new Button(pane, SWT.PUSH | SWT.CENTER);
 		okButton.setText("OK");
 		okButton.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				boolean editMode = editCheck.getSelection();
 				DateTime startWidget = (dayButton.getSelection()) ? dayCalendar : periodStartCalendar;
 				DateTime endWidget = (dayButton.getSelection()) ? dayCalendar : periodEndCalendar;
 				LocalDate periodStart = LocalDate.of(startWidget.getYear(), startWidget.getMonth() + 1, startWidget.getDay());
 				LocalDate periodEnd = LocalDate.of(endWidget.getYear(), endWidget.getMonth() + 1, endWidget.getDay());
 				enterPoint.storeReportPeriod(periodStart, periodEnd);
+				enterPoint.storeEditMode(editMode);
 				enterPoint.changeView(View.Id.REPORT_VIEW);
 			}
 
