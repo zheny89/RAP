@@ -16,6 +16,8 @@ Bundle-Classpath: .,
  lib/javax.persistence_2.1.1.v201509150925.jar,
  lib/log4j-1.2.17.jar,
  lib/SkypeBotAPI.jar
-Require-Bundle: org.eclipse.rap.rwt;bundle-version="[2.0.0,4.0.0)"
+Require-Bundle: org.eclipse.rap.rwt;bundle-version="[2.0.0,4.0.0)",
+ org.eclipse.rap.nebula.jface.gridviewer;bundle-version="3.1.2",
+ org.eclipse.rap.nebula.widgets.grid;bundle-version="3.1.2"
 Service-Component: OSGI-INF/contribution.xml
 Import-Package: org.eclipse.swt.widgets, org.osgi.framework

@@ -28,6 +28,7 @@ public class Worker {
 			case SICK_LEAVE: return "На больничном";
 			case VACATION: return "В отпуске";
 			case FIRED: return "Уволен";
+			case NONE: return "(нет)";
 			default: return "";
 			}
 		}
