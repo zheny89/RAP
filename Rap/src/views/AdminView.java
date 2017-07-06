@@ -14,6 +14,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
@@ -64,30 +65,20 @@ public class AdminView implements View {
 		reportsButton = new Button(upperComposite, SWT.PUSH);
 		reportsButton.setText("Просмотреть отчет");
 		reportsButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		reportsButton.addSelectionListener(new SelectionListener() {
-
+		reportsButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ReportDialog dial = new ReportDialog(enterPoint, parent.getShell());
-				dial.open();
-				//enterPoint.changeView(View.Id.REPORT_VIEW);
+				new ReportDialog(enterPoint, parent.getShell()).open();
 			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {/*not called*/}
-			
 		});
 		
 		changeBaseButton = new Button(upperComposite, SWT.PUSH);
 		changeBaseButton.setText("Планирование задач");
 		changeBaseButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		changeBaseButton.addListener(SWT.MouseUp, new Listener() {
-			
+		changeBaseButton.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void handleEvent(Event event) {
-				Shell shell = getChangeShell(parent);
-				shell.setVisible(true);
-				
+			public void widgetSelected(SelectionEvent e) {
+				new FlagTaskDialog(enterPoint, parent.getShell()).open();
 			}
 		});
 		
