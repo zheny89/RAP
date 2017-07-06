@@ -96,6 +96,8 @@ public class ClientView implements View {
 					String message = requestText.getText();
 					try {
 						LinkConnector.addMessage(userID, message);
+						shell.close();
+						shell.dispose();
 					} catch (EntryNotExistsException e) {
 						e.printStackTrace();
 					}

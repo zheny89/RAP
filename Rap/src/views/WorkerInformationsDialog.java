@@ -100,9 +100,8 @@ public class WorkerInformationsDialog extends Shell {
 			}
 		});
 		
-		if(worker.isAdmin())
-			yesButton.setSelection(true);
-		else noButton.setSelection(false);
+		yesButton.setSelection(worker.isAdmin());
+		noButton.setSelection(!worker.isAdmin());
 	}
 
 }
