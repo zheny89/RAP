@@ -115,38 +115,27 @@ public class LoginView implements View {
 	}
 	
 	private boolean authenticateWorker(String login, String pswd) {
-		if (login == null || pswd == null || login.isEmpty() || pswd.isEmpty()) {
+		LdapContext connection = authByLdap(login, pswd);
+		if (connection == null) {
 			subtitleString = "Неверный логин или пароль";
 			return false;
 		}
-		// логиним по ldap
-		LdapContext connection = null;
-		try {
-			connection = LdapAuthentication.getConnection(login, pswd);
-		} catch (NamingException e) {
-			e.printStackTrace();
-			subtitleString = "Неверный логин или пароль";
-			return false;
-		}
-		// проверяем, есть ли работник в базе, если что заносим
+		LdapAuthentication.getUsersAttribute(login, connection);
+		String name = LdapAuthentication.getCommonName();
 		Worker worker = LinkConnector.getWorker(login);
 		if (worker == null) {
-			LdapAuthentication.getUsersAttribute(login, connection);
-			String name = LdapAuthentication.getCommonName();
-			try {
-				boolean isAdmin = LinkConnector.getWorkersCount() == 0;
-				LinkConnector.addWorker(login, name, isAdmin);
-				worker = LinkConnector.getWorker(login);
-			} catch (EntryAlreadyExistsException e) {
-				e.printStackTrace(); // should never fire
+			createWorkerInDatabase(login, name);
+			worker = LinkConnector.getWorker(login);
+			if (worker == null) {
 				subtitleString = "Unknown error";
-				LinkConnector.close();
 				return false;
 			}
-
 		}
+		// отмечаем работника, если что обновляем имя
 		try {
 			LinkConnector.logWorkerIn(worker.getId());
+			if (!worker.getName().equals(name))
+				LinkConnector.updateWorkerName(worker.getId(), name);
 		} catch (EntryNotExistsException e1) {
 			e1.printStackTrace(); // should never fire
 			subtitleString = "Unknown error";
@@ -163,5 +152,26 @@ public class LoginView implements View {
 		}
 		LdapAuthentication.closeLdapConnection();
 		return true;
+	}
+
+	private void createWorkerInDatabase(String login, String name) {
+		try {
+			boolean isAdmin = LinkConnector.getWorkersCount() == 0;
+			LinkConnector.addWorker(login, name, isAdmin);
+		} catch (EntryAlreadyExistsException e) {
+			e.printStackTrace(); // should never fire
+		}
+	}
+
+	private LdapContext authByLdap(String login, String pswd) {
+		if (login == null || pswd == null || login.isEmpty() || pswd.isEmpty())
+			return null;
+		try {
+			return LdapAuthentication.getConnection(login, pswd);
+		} catch (NamingException e) {
+			System.err.println(e.getMessage());
+			subtitleString = "Неверный логин или пароль";
+			return null;
+		}
 	}
 }

@@ -351,4 +351,19 @@ public class LinkConnector {
 		return ((Long) q.getSingleResult()).intValue();
 	}
 
+	/**
+	 * Изменить имя работника
+	 * @param id работника
+	 * @param name новое имя
+	 * @throws EntryNotExistsException если работник не найден в базе
+	 */
+	public static void updateWorkerName(int id, String name) throws EntryNotExistsException {
+		Worker worker = getWorker(id);
+		if (worker == null) throw new EntryNotExistsException("No worker found with id = " + id);
+		entityManager.getTransaction().begin();
+		worker.setName(name);
+		entityManager.persist(worker);
+		entityManager.getTransaction().commit();
+	}
+
 }
