@@ -1,11 +1,15 @@
 package views;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -16,6 +20,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -29,14 +34,16 @@ import rap.BasicEntryPoint;
 public class FlagTaskDialog extends Shell {
 	
 	//private BasicEntryPoint enterPoint;
-	//private Shell parent;
-	private int[] workerIds;
+	private Composite listComposite;
+	private List<Worker> workers;
+	private Worker[] workersByComboIndex;
 	private List<Button> radioButtons;
 	private DateTime dateField;
 	private Combo workerBox;
 	
 	public FlagTaskDialog(BasicEntryPoint enterPoint, Shell parent) {
 		super(parent);
+		this.workers = LinkConnector.getWorkers();
 		this.setText("Задачи");
 		this.setLayout(new GridLayout(1, false));
 
@@ -130,12 +137,13 @@ public class FlagTaskDialog extends Shell {
 		okButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				int workerId = workerBox.getSelectionIndex();
-				if (workerId < 0) {
+				int workerIndex = workerBox.getSelectionIndex();
+				if (workerIndex < 0) {
 					resultLabel.setText("Работник не выбран");
 					resultLabel.pack();
 					return;
 				}
+				int workerId = workersByComboIndex[workerIndex].getId();
 				short flag = -1;
 				for (Button rb : radioButtons)
 					if (rb.getSelection()) {
@@ -156,6 +164,7 @@ public class FlagTaskDialog extends Shell {
 				else {
 					FlagTask task = new FlagTask(workerId, flag, date);
 					FlagsChanger.getInstance().addTask(task);
+					fillTasksList(rightComposite);
 					resultLabel.setText("Задача занесена в список");
 				}
 				resultLabel.pack();
@@ -164,12 +173,11 @@ public class FlagTaskDialog extends Shell {
 	}
 
 	private void fillWorkerComboBox(Combo workerBox) {
-		List<Worker> workers = LinkConnector.getWorkers();
-		workerIds = new int[workers.size()];
+		workersByComboIndex = new Worker[workers.size()];
 		int i = 0;
 		for(Worker w : workers) {
 			workerBox.add(w.getName(), i);
-			workerIds[i++] = w.getId();
+			workersByComboIndex[i++] = w;
 		}
 	}
 
@@ -186,6 +194,57 @@ public class FlagTaskDialog extends Shell {
 		leftComposite.setLayout(new GridLayout(1, false));
 		leftComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
-		//FlagsChanger.getInstance()leftComposite;
+		Label header = new Label(leftComposite, SWT.NONE);
+		header.setText("Запланированные задачи");
+		header.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+		
+		ScrolledComposite listHolderComposite = new ScrolledComposite(leftComposite, SWT.V_SCROLL);
+		listHolderComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+		listComposite = new Composite(listHolderComposite, SWT.NONE);
+		listHolderComposite.setContent(listComposite);
+		
+		listComposite.setLayout(new GridLayout(1, true));
+		fillTasksList(listComposite);
+		listComposite.setSize(listComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+	}
+
+	private void fillTasksList(Composite listComposite) {
+		Control[] children = listComposite.getChildren();
+		for (Control child: children) child.dispose();
+		List<FlagTask> taskList = new ArrayList<FlagTask>();
+		for (FlagTask task : taskList) {
+			Composite taskComposite = new Composite(listComposite, SWT.NONE);
+			taskComposite.setLayoutData(new GridData(SWT.FILL, SWT.UP, true, false));
+			taskComposite.setLayout(new GridLayout(1, false));
+			Label dateLabel = new Label(taskComposite, SWT.NONE);
+			dateLabel.setText(task.getDate().toString());
+			dateLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+			Label taskLabel = new Label(taskComposite, SWT.NONE);
+			String workerName = getWorkerName(task.getWorkerID());
+			String flagName = Worker.Flags.toString(task.getFlag());
+			taskLabel.setText(workerName + " - " + flagName);
+			taskLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+			Button cancelButton = new Button(taskComposite, SWT.PUSH);
+			cancelButton.setText("Отменить");
+			cancelButton.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false));
+			cancelButton.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					FlagsChanger.getInstance().removeTask(task);
+					taskComposite.dispose();
+					GridData data = (GridData) taskComposite.getLayoutData();
+					taskComposite.setVisible(false);
+					data.exclude = true;
+					listComposite.layout(true);
+				}
+			});
+		}
+	}
+
+	private String getWorkerName(long workerID) {
+		for (Worker w : workers)
+			if (w.getId() == workerID)
+				return w.getName();
+		return "???";
 	}
 }
