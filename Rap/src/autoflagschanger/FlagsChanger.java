@@ -39,6 +39,7 @@ public class FlagsChanger extends Thread {
 			list = new LinkedList<>();
 			tasks.put(key, list);
 			list.add(task);
+			saveTasks();
 		}else{
 			boolean isExist = false;
 			for(FlagTask targetTask:list){
@@ -109,6 +110,7 @@ public class FlagsChanger extends Thread {
 			}
 		}
 		out.close();
+		System.out.println("Сохранено в " + file.getAbsolutePath());
 		}catch (Exception e) {
 			System.err.println("Не смог сохранить задачи! "+e.toString());
 		}

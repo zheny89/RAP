@@ -47,7 +47,6 @@ public class AdminView implements View {
 	private Font standardBoldFont, standardItalicFont;
 	private ImageData greenIconData, greyIconData;
 	private Map<Worker, Composite> userList = new HashMap<Worker, Composite>();
-	private Set<Worker> workerList;
 	
 	public AdminView(BasicEntryPoint enterPoint, Composite parent) {
 		this.enterPoint = enterPoint;
@@ -86,16 +85,11 @@ public class AdminView implements View {
 		int unreadCount = LinkConnector.getMessagesCount(Message.Status.UNREAD);
 		messageButton.setText("Сообщения (" + Integer.toString(unreadCount) + ")");
 		messageButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		messageButton.addSelectionListener(new SelectionListener() {
-
+		messageButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				enterPoint.changeView(View.Id.MAIL_VIEW);
 			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {/* never called */}
-			
 		});
 		
 		Label upperSeparator = new Label(adminComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -131,7 +125,9 @@ public class AdminView implements View {
 	        @Override
 	        public void handleEvent(Event e)
 	        {
-	            if (searchField.getText().equals("поиск...")) searchField.setText("");
+	        	String text = searchField.getText();
+	        	if (text != null && text.equals("поиск..."))
+	        		searchField.setText("");
 	        }
 	    });
 		searchField.addModifyListener(new ModifyListener() {
@@ -166,108 +162,6 @@ public class AdminView implements View {
 				//iconData.			
 			}
 		});
-	}
-	
-	private Shell getChangeShell(Composite parent){
-		int width = 400;
-		int height = 300;
-		Shell shell = new Shell(parent.getShell(), SWT.DIALOG_TRIM);
-		shell.setText("Изменение аттрибутов");
-		shell.setBounds(parent.getBounds().width/2-width/2,parent.getBounds().height/2-height/2,width,height);
-		shell.setLayout(new GridLayout(2,false));
-		
-		Combo comboBox = new Combo(shell, SWT.NONE);
-		fillComboBox(comboBox);
-		comboBox.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true,2,1));
-		comboBox.setVisibleItemCount(10);
-
-		Composite composite = new Composite(shell,SWT.NONE);
-		composite.setLayoutData(new GridData(SWT.CENTER,SWT.CENTER,true,true,1,1));
-		composite.setLayout(new GridLayout(1,true));
-		
-		Button noneButton = new Button(composite,SWT.RADIO);
-		noneButton.setText("Работает");
-		noneButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
-		
-		Button timeOffButton = new Button(composite,SWT.RADIO);
-		timeOffButton.setText("В отгуле");
-		timeOffButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
-		
-		Button stick_leaveButton = new Button(composite,SWT.RADIO);
-		stick_leaveButton.setText("На больничном");
-		stick_leaveButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
-		
-		Button vocationButton = new Button(composite,SWT.RADIO);
-		vocationButton.setText("В отпуске");
-		vocationButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
-		
-		Button firedButton = new Button(composite,SWT.RADIO);
-		firedButton.setText("Уволен");
-		firedButton.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,true));
-		
-		Button okButton = new Button(shell,SWT.PUSH);
-		okButton.setText("Применить");
-		okButton.setLayoutData(new GridData(SWT.RIGHT,SWT.BOTTOM,true,true));
-		okButton.addListener(SWT.MouseUp, new Listener() {
-			
-			@Override
-			public void handleEvent(Event event) {
-				shell.close();
-				shell.dispose();
-			}
-		});
-		
-		comboBox.addSelectionListener(new SelectionListener() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int index = comboBox.getSelectionIndex();
-				for(int i=0; i< index;i++)
-					workerList.iterator().next();
-				Worker worker = workerList.iterator().next();
-				
-				noneButton.setSelection(false);
-				firedButton.setSelection(false);
-				stick_leaveButton.setSelection(false);
-				timeOffButton.setSelection(false);
-				vocationButton.setSelection(false);
-				
-				if(worker.getFlag() == Worker.Flags.NONE)
-					noneButton.setSelection(true);
-				else if(worker.getFlag() == Worker.Flags.FIRED)
-					firedButton.setSelection(true);
-				else if(worker.getFlag() == Worker.Flags.SICK_LEAVE)
-					stick_leaveButton.setSelection(true);
-				else if(worker.getFlag() == Worker.Flags.TIME_OFF)
-					timeOffButton.setSelection(true);
-				else if(worker.getFlag() == Worker.Flags.VACATION)
-					vocationButton.setSelection(true);
-				
-				if(noneButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.NONE,null);
-				else
-					if(firedButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.FIRED,null);
-				else
-					if(stick_leaveButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.SICK_LEAVE,null);
-				else
-					if(timeOffButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.TIME_OFF,null);
-				else
-					if(vocationButton.getSelection()) LinkConnector.updateWorkerFlag(worker.getId(),Worker.Flags.VACATION,null);
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-		
-		return shell;
-	}
-	
-	private void fillComboBox(Combo combo){
-		workerList = userList.keySet();
-		for(Iterator<Worker> iterator = workerList.iterator();iterator.hasNext();){
-			Worker worker = iterator.next();
-			combo.add(worker.getName());
-		}
 	}
 	
 	private void fillUsersList() {

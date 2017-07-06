@@ -163,6 +163,8 @@ public class FlagTaskDialog extends Shell {
 					FlagTask task = new FlagTask(workerId, flag, date);
 					FlagsChanger.getInstance().addTask(task);
 					fillTasksList(listComposite);
+					listComposite.layout(true);
+					listComposite.redraw();
 					resultLabel.setText("Задача занесена в список");
 				}
 				resultLabel.pack();
@@ -213,14 +215,15 @@ public class FlagTaskDialog extends Shell {
 
 	private void fillTasksList(Composite listComposite) {
 		for (Control c: listComponents) c.dispose();
+		listComponents.clear();
+		listComposite.layout(true);
 		List<FlagTask> taskList = FlagsChanger.getInstance().getSortedTasks();
 		for (FlagTask task : taskList) {
-			Label separator = new Label(listComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
-			separator.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-			listComponents.add(separator);
 			Composite taskComposite = new Composite(listComposite, SWT.NONE);
 			taskComposite.setLayoutData(new GridData(SWT.FILL, SWT.UP, true, false));
 			taskComposite.setLayout(new GridLayout(1, false));
+			Label separator = new Label(taskComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
+			separator.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 			Label dateLabel = new Label(taskComposite, SWT.NONE);
 			dateLabel.setText(task.getDate().toString());
 			dateLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
@@ -237,14 +240,15 @@ public class FlagTaskDialog extends Shell {
 				public void widgetSelected(SelectionEvent e) {
 					FlagsChanger.getInstance().removeTask(task);
 					taskComposite.dispose();
-					GridData data = (GridData) taskComposite.getLayoutData();
-					taskComposite.setVisible(false);
-					data.exclude = true;
+					listComponents.remove(taskComposite);
 					listComposite.layout(true);
 				}
 			});
 			listComponents.add(taskComposite);
 		}
+		listComposite.setSize(listComposite.computeSize(300, SWT.DEFAULT));
+		//listComposite.update();
+		
 	}
 
 	private String getWorkerName(long workerID) {

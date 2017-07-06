@@ -61,7 +61,8 @@ public class WorkerToWorktimesTable extends Hashtable<Worker, Worktime[]> {
 					|| workerTimes[timesIndex].getDay().toLocalDate().isAfter(day)) {
 				// нет отметки
 				short flag = worker.getFlag();
-				if (flag != Worker.Flags.NONE && !day.isBefore(worker.getFlagStartDate().toLocalDate()))
+				if (flag != Worker.Flags.NONE && flag != Worker.Flags.TIME_OFF 
+						&& !day.isBefore(worker.getFlagStartDate().toLocalDate()))
 					itemContent[contentIndex++] = Worker.Flags.toSmallString(flag);
 				else itemContent[contentIndex++] = "0";
 			}
