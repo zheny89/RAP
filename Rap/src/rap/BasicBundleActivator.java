@@ -2,7 +2,12 @@ package rap;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -10,6 +15,7 @@ import org.osgi.framework.BundleContext;
 import SkypeBot.ActionListener;
 import SkypeBot.JSONReader;
 import SkypeBot.Skype;
+import SkypeBot.User;
 import autoflagschanger.FlagTask;
 import autoflagschanger.FlagsChanger;
 import database.LinkConnector;
@@ -24,36 +30,44 @@ public class BasicBundleActivator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		LinkConnector.connect();
 		FlagsChanger.getInstance().start();
-		new Thread(new Runnable() {
+		Thread th = new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
 				try{
 				Skype skype = Skype.getInstance();
-				skype.setDebug(true);
 				skype.setSkypeServerPort(2342);
-				skype.setSkypeListener("message", new ActionListener() {
-					
-					@Override
-					public void action(JSONReader arg0) {
-						System.out.println("Пришло сообщение: "+arg0.getField("text"));
-						try{
-						skype.replayToMessage(arg0.getField("text"), arg0);
-						}catch (Exception e) {
-							// TODO: handle exception
-						}
-						
-					}
-				});
 				skype.connect(appID, appPass);
-				String convid = skype.startConversation(null, skype.getUserId("Киселев"));
-				skype.sendMessage(convid, "Начало диалога");
+				skype.setDebug(true);
+				/*Calendar calendar = Calendar.getInstance();
+				int hour = calendar.get(Calendar.HOUR_OF_DAY);
+				int minuts = calendar.get(Calendar.MINUTE);
+				minuts = 60 - minuts;
+				if(hour < 10)
+					hour = 10 - hour;
+				else hour = 24 - hour + 10;*/
+				while(true){
+					ArrayList<User> list = skype.getUserList();
+					for(User user:list){
+						String convID = skype.startConversation(null, user.getId());
+						skype.sendMessage(convID, String.format("Доброе утро! Уважаемый, %s, не забудьте отметиться на сайте", user.getName()));	
+					}
+					TimeUnit.MINUTES.sleep(1);
+					//TimeUnit.HOURS.sleep(hour);
+					LocalDateTime now = LocalDateTime.now();
+					LocalDateTime tomorrow10AM = LocalDateTime.of(now.toLocalDate().plusDays(0), LocalTime.of(15, 20));
+					long minutesSleep = now.until(tomorrow10AM, ChronoUnit.MINUTES);
+					System.out.println(minutesSleep);
+					TimeUnit.MINUTES.sleep(minutesSleep);
+				}
 				
 			}catch (Exception e) {
 				// TODO: handle exception
 			}
 			}
-		}).start();
+		});
+		th.setDaemon(true);
+		th.start();
 		
 		System.out.println("Connection to database established");
 	}
