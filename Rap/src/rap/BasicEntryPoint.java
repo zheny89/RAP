@@ -9,6 +9,8 @@ import org.eclipse.rap.rwt.client.service.JavaScriptExecutor;
 import org.eclipse.rap.rwt.service.SettingStore;
 import org.eclipse.swt.widgets.Composite;
 
+import database.LinkConnector;
+import database.Worker;
 import views.AdminView;
 import views.ClientView;
 import views.LoginView;
@@ -79,13 +81,19 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     
     private int getCurrentViewID(){
     	String currentViewString = store.getAttribute("currentView");
-    	if(currentViewString != null){
-    		String date = store.getAttribute("validDate");
-    		if(date.equals(getCurrentDate())) {
-    			return Integer.valueOf(currentViewString);
-    		}
+    	if(currentViewString != null) {
+    		int currentView = Integer.parseInt(currentViewString);
+	    	int userId = Integer.parseInt(store.getAttribute("userID"));
+	    	boolean isAdmin = LinkConnector.getWorker(userId).isAdmin();
+	    	if(View.Id.isRestrictedView(currentView) && !isAdmin)
+	    		currentView = View.Id.LOGIN_VIEW; // когда не-админ просит админские страницы
+	    	if (currentView == View.Id.CLIENT_VIEW && isAdmin)
+	    		currentView = View.Id.ADMIN_VIEW; // когда админ просит клиентскую страницу
+	    	String date = store.getAttribute("validDate");
+	    	if(date.equals(getCurrentDate()))
+	    		return currentView;
     	}
-    	return 0;
+    	return View.Id.LOGIN_VIEW;
     }
     private String getCurrentDate(){
     	return LocalDate.now().toString(); // yyyy-mm-dd
