@@ -131,7 +131,7 @@ public class FlagsChanger extends Thread {
 	}
 	
 	public List<FlagTask> getSortedTasks(){
-		if(tasks.size() == 0) return null;
+		if(tasks.size() == 0) return new ArrayList<FlagTask>();
 		Set<String> dateStringList = tasks.keySet();
 		List<LocalDate> listDate = new ArrayList<LocalDate>(dateStringList.size());
 		for(String s:dateStringList)

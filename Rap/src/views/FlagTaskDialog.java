@@ -1,22 +1,18 @@
 package views;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -40,6 +36,7 @@ public class FlagTaskDialog extends Shell {
 	private List<Button> radioButtons;
 	private DateTime dateField;
 	private Combo workerBox;
+	private Font standardBoldFont;
 	
 	public FlagTaskDialog(BasicEntryPoint enterPoint, Shell parent) {
 		super(parent);
@@ -77,6 +74,7 @@ public class FlagTaskDialog extends Shell {
 		Label header = new Label(rightComposite, SWT.NONE);
 		header.setText("Новая задача");
 		header.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+		header.setFont(standardBoldFont);
 		
 		Composite workerComposite = new Composite(rightComposite, SWT.NONE);
 		workerComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -196,6 +194,10 @@ public class FlagTaskDialog extends Shell {
 		
 		Label header = new Label(leftComposite, SWT.NONE);
 		header.setText("Запланированные задачи");
+		FontData fontData = header.getFont().getFontData()[0];
+		standardBoldFont = new Font(header.getFont().getDevice(), 
+				new FontData(fontData.getName(), fontData.getHeight(), SWT.BOLD));
+		header.setFont(standardBoldFont);
 		header.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 		
 		ScrolledComposite listHolderComposite = new ScrolledComposite(leftComposite, SWT.V_SCROLL);
@@ -211,8 +213,10 @@ public class FlagTaskDialog extends Shell {
 	private void fillTasksList(Composite listComposite) {
 		Control[] children = listComposite.getChildren();
 		for (Control child: children) child.dispose();
-		List<FlagTask> taskList = new ArrayList<FlagTask>();
+		List<FlagTask> taskList = FlagsChanger.getInstance().getSortedTasks();
 		for (FlagTask task : taskList) {
+			Label separator = new Label(listComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
+			separator.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 			Composite taskComposite = new Composite(listComposite, SWT.NONE);
 			taskComposite.setLayoutData(new GridData(SWT.FILL, SWT.UP, true, false));
 			taskComposite.setLayout(new GridLayout(1, false));
@@ -246,5 +250,11 @@ public class FlagTaskDialog extends Shell {
 			if (w.getId() == workerID)
 				return w.getName();
 		return "???";
+	}
+	
+	@Override
+	public void dispose() {
+		standardBoldFont.dispose();
+		super.dispose();
 	}
 }
