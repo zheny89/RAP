@@ -29,7 +29,7 @@ import rap.BasicEntryPoint;
 
 public class FlagTaskDialog extends Shell {
 	
-	//private BasicEntryPoint enterPoint;
+	private List<Control> listComponents = new LinkedList<Control>();
 	private Composite listComposite;
 	private List<Worker> workers;
 	private Worker[] workersByComboIndex;
@@ -162,7 +162,7 @@ public class FlagTaskDialog extends Shell {
 				else {
 					FlagTask task = new FlagTask(workerId, flag, date);
 					FlagsChanger.getInstance().addTask(task);
-					fillTasksList(rightComposite);
+					fillTasksList(listComposite);
 					resultLabel.setText("Задача занесена в список");
 				}
 				resultLabel.pack();
@@ -201,8 +201,9 @@ public class FlagTaskDialog extends Shell {
 		header.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 		
 		ScrolledComposite listHolderComposite = new ScrolledComposite(leftComposite, SWT.V_SCROLL);
-		listHolderComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+		listHolderComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		listComposite = new Composite(listHolderComposite, SWT.NONE);
+		listComposite.setLayoutData(new GridData(SWT.FILL, SWT.UP, true, false));
 		listHolderComposite.setContent(listComposite);
 		
 		listComposite.setLayout(new GridLayout(1, true));
@@ -211,12 +212,12 @@ public class FlagTaskDialog extends Shell {
 	}
 
 	private void fillTasksList(Composite listComposite) {
-		Control[] children = listComposite.getChildren();
-		for (Control child: children) child.dispose();
+		for (Control c: listComponents) c.dispose();
 		List<FlagTask> taskList = FlagsChanger.getInstance().getSortedTasks();
 		for (FlagTask task : taskList) {
 			Label separator = new Label(listComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
 			separator.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			listComponents.add(separator);
 			Composite taskComposite = new Composite(listComposite, SWT.NONE);
 			taskComposite.setLayoutData(new GridData(SWT.FILL, SWT.UP, true, false));
 			taskComposite.setLayout(new GridLayout(1, false));
@@ -242,6 +243,7 @@ public class FlagTaskDialog extends Shell {
 					listComposite.layout(true);
 				}
 			});
+			listComponents.add(taskComposite);
 		}
 	}
 
