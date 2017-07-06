@@ -292,6 +292,15 @@ public class AdminView implements View {
 			Button button = new Button(compos, SWT.PUSH);
 			button.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true));
 			button.setText(worker.getName());
+			button.addListener(SWT.MouseUp, new Listener() {
+				
+				@Override
+				public void handleEvent(Event event) {
+					WorkerInformationsDialog dialog = new WorkerInformationsDialog(listComposite.getShell(), worker);
+					dialog.setVisible(true);
+					
+				}
+			});
 			userList.put(worker, compos);
 		}
 	}
