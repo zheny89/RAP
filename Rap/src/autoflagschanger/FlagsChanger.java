@@ -5,12 +5,15 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import database.LinkConnector;
@@ -125,6 +128,22 @@ public class FlagsChanger extends Thread {
 		}catch (Exception e) {
 			System.err.println("Не смог загрузить задачи! "+e.toString());
 		}
+	}
+	
+	public List<FlagTask> getSortedTasks(){
+		if(tasks.size() == 0) return null;
+		Set<String> dateStringList = tasks.keySet();
+		List<LocalDate> listDate = new ArrayList<LocalDate>(dateStringList.size());
+		for(String s:dateStringList)
+			listDate.add(LocalDate.parse(s));
+		Collections.sort(listDate);
+		Collections.reverse(listDate);
+		ArrayList<FlagTask> taskList = new ArrayList<>();
+		for(LocalDate date:listDate){
+			for(FlagTask task:tasks.get(date.toString()))
+				taskList.add(task);
+		}
+		return taskList;
 	}
 	
 	static public FlagsChanger getInstance(){

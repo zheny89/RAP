@@ -1,26 +1,17 @@
 package rap;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Query;
-
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.client.WebClient;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 
-import autoflagschanger.FlagsChanger;
 import database.LinkConnector;
 import database.Message;
 import database.Worker;
 import database.Worktime;
-import exception.EntryAlreadyExistsException;
-import exception.EntryNotExistsException;
 
 
 public class BasicApplication implements ApplicationConfiguration {
@@ -33,7 +24,11 @@ public class BasicApplication implements ApplicationConfiguration {
         new Thread(new Runnable() {
 			@Override
 			public void run() {
-				
+				try{
+				LinkConnector.updateWorkerFlag(1, (short)0, null);
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
 				System.out.println("WORKER Table");
 				List<Worker> userList = LinkConnector.getWorkers();
 		        for (Worker usr : userList) {
