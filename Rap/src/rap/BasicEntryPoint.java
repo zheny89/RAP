@@ -85,13 +85,13 @@ public class BasicEntryPoint extends AbstractEntryPoint {
     		int currentView = Integer.parseInt(currentViewString);
 	    	int userId = Integer.parseInt(store.getAttribute("userID"));
 	    	boolean isAdmin = LinkConnector.getWorker(userId).isAdmin();
-	    	if(View.Id.isRestrictedView(currentView) && !isAdmin) {
-	    		currentView = View.Id.LOGIN_VIEW;
-	    	}
+	    	if(View.Id.isRestrictedView(currentView) && !isAdmin)
+	    		currentView = View.Id.LOGIN_VIEW; // когда не-админ просит админские страницы
+	    	if (currentView == View.Id.CLIENT_VIEW && isAdmin)
+	    		currentView = View.Id.ADMIN_VIEW; // когда админ просит клиентскую страницу
 	    	String date = store.getAttribute("validDate");
-	    	if(date.equals(getCurrentDate())) {
+	    	if(date.equals(getCurrentDate()))
 	    		return currentView;
-	    	}
     	}
     	return View.Id.LOGIN_VIEW;
     }
