@@ -47,8 +47,10 @@ public class FlagsChanger extends Thread {
 					break;
 				}
 			}
-			if(!isExist)
+			if(!isExist){
 				list.add(task);
+				saveTasks();
+			}
 		}
 	}
 	
@@ -60,6 +62,7 @@ public class FlagsChanger extends Thread {
 			FlagTask targetTask = iterator.next();
 			if(targetTask.equals(targetTask)){
 				iterator.remove();
+				saveTasks();
 				break;
 			}
 		}
