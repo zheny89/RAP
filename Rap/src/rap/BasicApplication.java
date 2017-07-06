@@ -24,13 +24,9 @@ public class BasicApplication implements ApplicationConfiguration {
         new Thread(new Runnable() {
 			@Override
 			public void run() {
-				try{
-				LinkConnector.updateWorkerFlag(1, (short)0, null);
-				}catch (Exception e) {
-					// TODO: handle exception
-				}
+			
 				System.out.println("WORKER Table");
-				List<Worker> userList = LinkConnector.getWorkers();
+			List<Worker> userList = LinkConnector.getWorkers();
 		        for (Worker usr : userList) {
 		            System.out.println(usr.toString());
 		        }
