@@ -314,6 +314,7 @@ public class LinkConnector {
 	 */
 	public static void updateWorkerAdmin(int workerId, boolean isAdmin) {
 		Worker worker = getWorker(workerId);
+		if (isAdmin == false && worker.isAdmin() && getAdminCount() < 2) return; // нельзя забрать права у последнего админа
 		entityManager.getTransaction().begin();
 		worker.setAdmin(isAdmin);
 		entityManager.persist(worker);
@@ -364,6 +365,14 @@ public class LinkConnector {
 		worker.setName(name);
 		entityManager.persist(worker);
 		entityManager.getTransaction().commit();
+	}
+	
+	/**
+	 * @return количество работников с парвами администратора
+	 */
+	public static int getAdminCount() {
+		Query q = entityManager.createQuery("SELECT COUNT(1) FROM Worker w WHERE w.isAdmin <> 0");
+		return ((Long) q.getSingleResult()).intValue();
 	}
 
 }
