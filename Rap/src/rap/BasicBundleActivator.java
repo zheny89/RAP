@@ -100,7 +100,6 @@ public class BasicBundleActivator implements BundleActivator {
 					LocalDateTime now = LocalDateTime.now();
 					LocalDateTime tomorrow10AM = LocalDateTime.of(now.toLocalDate().plusDays(0), LocalTime.of(15, 20));
 					long minutesSleep = now.until(tomorrow10AM, ChronoUnit.MINUTES);
-					System.out.println(minutesSleep);
 					TimeUnit.MINUTES.sleep(minutesSleep);
 				}
 				
