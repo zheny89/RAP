@@ -76,7 +76,7 @@ public class ClientView implements View {
 			Shell shell = new Shell(parent);
 			shell.setText("Сообщение");
 			shell.setBounds(parent.getBounds().width/2-width/2,parent.getBounds().height/2-height/2,width,height);
-			shell.setLayout(new GridLayout(1,false));
+			shell.setLayout(new GridLayout(1,true));
 			
 			Composite textCompos = new Composite(shell,SWT.NONE);
 			textCompos.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
